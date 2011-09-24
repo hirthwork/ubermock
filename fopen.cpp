@@ -1,7 +1,6 @@
 #include <dlfcn.h>
 #include <stdio.h>
 #include <string.h>
-#include <reinvented-wheels/backtrace.hpp>
 
 FILE* fopen(const char* path, const char* mode)
 {

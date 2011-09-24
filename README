@@ -1,0 +1,33 @@
+user@host $ bjam-1_46
+warning: No toolsets are configured.
+warning: Configuring default toolset "gcc".
+warning: If the default is wrong, your build may not work correctly.
+warning: Use the "toolset=xxxxx" option to override our guess.
+warning: For more configuration options, please consult
+warning: http://boost.org/boost-build2/doc/html/bbv2/advanced/configuration.html
+...found 27 targets...
+...updating 11 targets...
+common.mkdir bin
+common.mkdir bin/gcc-4.6.1
+common.mkdir bin/gcc-4.6.1/debug
+gcc.compile.c++ bin/gcc-4.6.1/debug/fopen.o
+gcc.compile.c++ bin/gcc-4.6.1/debug/launchmock.o
+gcc.link.dll bin/gcc-4.6.1/debug/libmock.so
+gcc.compile.c++ bin/gcc-4.6.1/debug/main.o
+gcc.compile.c++ bin/gcc-4.6.1/debug/launch.o
+gcc.link.dll bin/gcc-4.6.1/debug/liblaunch.so
+gcc.link bin/gcc-4.6.1/debug/test
+gcc.link bin/gcc-4.6.1/debug/main
+...updated 11 targets...
+user@host $ bin/gcc-4.6.1/debug/main
+        value(4) = 8
+        value(5) = 10
+        value(6) = 12
+        abracadabra handle = (nil)
+        something handle = (nil)
+user@host $ bin/gcc-4.6.1/debug/test
+        value(4) = 8
+        value(5) = 20
+        value(6) = 12
+        abracadabra handle = 0xface8d
+        something handle = (nil)

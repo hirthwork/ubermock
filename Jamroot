@@ -1,0 +1,6 @@
+lib launch : launch.cpp ;
+exe main : main.cpp launch ;
+lib dl backtrace ;
+lib mock : fopen.cpp launchmock.cpp dl backtrace ;
+exe test : main.cpp launch mock ;
+

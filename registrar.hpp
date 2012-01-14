@@ -37,31 +37,39 @@ namespace NUberMock
     struct TCheckCaller<true>
     {
         template <class TCheck>
-        static bool Call(const NReinventedWheels::TBacktrace& backtrace,
+        static bool Call(const NBacktrace::TBacktrace& backtrace,
             TCheck check)
         {
             return check(backtrace);
         }
 
         template <class TCheck, class TArg>
-        static bool Call(const NReinventedWheels::TBacktrace& backtrace,
+        static bool Call(const NBacktrace::TBacktrace& backtrace,
             TCheck check, TArg arg)
         {
             return check(backtrace, arg);
         }
 
         template <class TCheck, class TArg1, class TArg2>
-        static bool Call(const NReinventedWheels::TBacktrace& backtrace,
+        static bool Call(const NBacktrace::TBacktrace& backtrace,
             TCheck check, TArg1 arg1, TArg2 arg2)
         {
             return check(backtrace, arg1, arg2);
         }
 
         template <class TCheck, class TArg1, class TArg2, class TArg3>
-        static bool Call(const NReinventedWheels::TBacktrace& backtrace,
+        static bool Call(const NBacktrace::TBacktrace& backtrace,
             TCheck check, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
             return check(backtrace, arg1, arg2, arg3);
+        }
+
+        template <class TCheck, class TArg1, class TArg2, class TArg3,
+            class TArg4>
+        static bool Call(const NBacktrace::TBacktrace& backtrace,
+            TCheck check, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
+        {
+            return check(backtrace, arg1, arg2, arg3, arg4);
         }
     };
 
@@ -69,97 +77,124 @@ namespace NUberMock
     struct TCheckCaller<false>
     {
         template <class TCheck>
-        static bool Call(const NReinventedWheels::TBacktrace&,
+        static bool Call(const NBacktrace::TBacktrace&,
             TCheck check)
         {
             return check();
         }
 
         template <class TCheck, class TArg>
-        static bool Call(const NReinventedWheels::TBacktrace&,
+        static bool Call(const NBacktrace::TBacktrace&,
             TCheck check, TArg arg)
         {
             return check(arg);
         }
 
         template <class TCheck, class TArg1, class TArg2>
-        static bool Call(const NReinventedWheels::TBacktrace&,
+        static bool Call(const NBacktrace::TBacktrace&,
             TCheck check, TArg1 arg1, TArg2 arg2)
         {
             return check(arg1, arg2);
         }
 
         template <class TCheck, class TArg1, class TArg2, class TArg3>
-        static bool Call(const NReinventedWheels::TBacktrace&,
+        static bool Call(const NBacktrace::TBacktrace&,
             TCheck check, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
             return check(arg1, arg2, arg3);
         }
+
+        template <class TCheck, class TArg1, class TArg2, class TArg3,
+            class TArg4>
+        static bool Call(const NBacktrace::TBacktrace&,
+            TCheck check, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
+        {
+            return check(arg1, arg2, arg3, arg4);
+        }
     };
 
-    template <class TCheck, bool UseBacktrace>
-    struct TCheckNullary: ICheckNullary
+    template <class TBase, class TCheck, bool UseBacktrace>
+    struct TCheckNullaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckNullary(TCheck check)
+        inline TCheckNullaryFunction(TCheck check)
             : Check_(check)
         {
         }
 
-        virtual bool Check(const NReinventedWheels::TBacktrace& backtrace) const
+        virtual bool Check(const NBacktrace::TBacktrace& backtrace) const
         {
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_);
         }
     };
 
-    template <class TCheck, bool UseBacktrace, class TArg>
-    struct TCheckUnary: ICheckUnary<TArg>
+    template <class TBase, class TCheck, bool UseBacktrace>
+    struct TCheckUnaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckUnary(TCheck check)
+        inline TCheckUnaryFunction(TCheck check)
             : Check_(check)
         {
         }
 
-        virtual bool Check(const NReinventedWheels::TBacktrace& backtrace,
-            TArg arg) const
+        virtual bool Check(const NBacktrace::TBacktrace& backtrace,
+            typename TBase::TArg_ arg) const
         {
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg);
         }
     };
 
-    template <class TCheck, bool UseBacktrace, class TArg1, class TArg2>
-    struct TCheckBinary: ICheckBinary<TArg1, TArg2>
+    template <class TBase, class TCheck, bool UseBacktrace>
+    struct TCheckBinaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckBinary(TCheck check)
+        inline TCheckBinaryFunction(TCheck check)
             : Check_(check)
         {
         }
 
-        virtual bool Check(const NReinventedWheels::TBacktrace& backtrace,
-            TArg1 arg1, TArg2 arg2) const
+        virtual bool Check(const NBacktrace::TBacktrace& backtrace,
+            typename TBase::TArg1_ arg1, typename TBase::TArg2_ arg2) const
         {
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg1,
                 arg2);
         }
     };
 
-    template <class TCheck, bool UseBacktrace, class TArg1, class TArg2,
-        class TArg3>
-    struct TCheckTernary: ICheckTernary<TArg1, TArg2, TArg3>
+    template <class TBase, class TCheck, bool UseBacktrace>
+    struct TCheckTernaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckTernary(TCheck check)
+        inline TCheckTernaryFunction(TCheck check)
             : Check_(check)
         {
         }
 
-        virtual bool Check(const NReinventedWheels::TBacktrace& backtrace,
-            TArg1 arg1, TArg2 arg2, TArg3 arg3) const
+        virtual bool Check(const NBacktrace::TBacktrace& backtrace,
+            typename TBase::TArg1_ arg1, typename TBase::TArg2_ arg2,
+            typename TBase::TArg3_ arg3) const
         {
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg1,
                 arg2, arg3);
+        }
+    };
+
+
+    template <class TBase, class TCheck, bool UseBacktrace>
+    struct TCheckQuaternaryFunction: TBase
+    {
+        const TCheck Check_;
+        inline TCheckQuaternaryFunction(TCheck check)
+            : Check_(check)
+        {
+        }
+
+        virtual bool Check(const NBacktrace::TBacktrace& backtrace,
+            typename TBase::TArg1_ arg1, typename TBase::TArg2_ arg2,
+            typename TBase::TArg3_ arg3, typename TBase::TArg4_ arg4) const
+        {
+            return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg1,
+                arg2, arg3, arg4);
         }
     };
 
@@ -169,33 +204,35 @@ namespace NUberMock
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<0, TFunc, UseBacktrace>
     {
+        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
         template <class TCheck>
-        static ICheckNullary* CreateCheck(TCheck check)
+        static TBase_* CreateCheck(TCheck check)
         {
-            return new TCheckNullary<TCheck, UseBacktrace>(check);
+            return new TCheckNullaryFunction<TBase_, TCheck, UseBacktrace>(
+                check);
         }
     };
 
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<1, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TArg_ TArg_;
+        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
         template <class TCheck>
-        static ICheckUnary<TArg_>* CreateCheck(TCheck check)
+        static TBase_* CreateCheck(TCheck check)
         {
-            return new TCheckUnary<TCheck, UseBacktrace, TArg_>(check);
+            return new TCheckUnaryFunction<TBase_, TCheck, UseBacktrace>(
+                check);
         }
     };
 
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<2, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TArg1_ TArg1_;
-        typedef typename TFunctionTraits<TFunc>::TArg2_ TArg2_;
+        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
         template <class TCheck>
-        static ICheckBinary<TArg1_, TArg2_>* CreateCheck(TCheck check)
+        static TBase_* CreateCheck(TCheck check)
         {
-            return new TCheckBinary<TCheck, UseBacktrace, TArg1_, TArg2_>(
+            return new TCheckBinaryFunction<TBase_, TCheck, UseBacktrace>(
                 check);
         }
     };
@@ -203,14 +240,24 @@ namespace NUberMock
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<3, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TArg1_ TArg1_;
-        typedef typename TFunctionTraits<TFunc>::TArg2_ TArg2_;
-        typedef typename TFunctionTraits<TFunc>::TArg3_ TArg3_;
+        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
         template <class TCheck>
-        static ICheckTernary<TArg1_, TArg2_, TArg3_>* CreateCheck(TCheck check)
+        static TBase_* CreateCheck(TCheck check)
         {
-            return new TCheckTernary<TCheck, UseBacktrace, TArg1_, TArg2_,
-                TArg3_>(check);
+            return new TCheckTernaryFunction<TBase_, TCheck, UseBacktrace>(
+                check);
+        }
+    };
+
+    template <class TFunc, bool UseBacktrace>
+    struct TCheckFactory<4, TFunc, UseBacktrace>
+    {
+        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
+        template <class TCheck>
+        static TBase_* CreateCheck(TCheck check)
+        {
+            return new TCheckQuaternaryFunction<TBase_, TCheck, UseBacktrace>(
+                check);
         }
     };
 

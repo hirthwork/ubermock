@@ -33,6 +33,13 @@ namespace NUberMock
     {
         return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3);
     }
+
+    template <class TFunc, class TArg1, class TArg2, class TArg3, class TArg4>
+    static inline typename TFunctionTraits<TFunc>::TResult_ HandleMock(
+        TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
+    {
+        return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3, arg4);
+    }
 }
 
 #endif

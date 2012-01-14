@@ -43,7 +43,7 @@ const char* A::f()
     return NUberMock::HandleMock(&A::f, this);
 }
 
-int A::g(int a, int b)
+int A::g(int a, int b) const
 {
     return NUberMock::HandleMock(&A::g, this, a, b);
 }
@@ -53,7 +53,7 @@ bool Afcheck(A*)
     return true;
 }
 
-bool Agcheck(A*, int a, int b)
+bool Agcheck(const A*, int a, int b)
 {
     return a == b;
 }

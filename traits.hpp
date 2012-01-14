@@ -195,6 +195,73 @@ namespace NUberMock
 
         static const unsigned Arity_ = 4;
     };
+
+    template <class TResult, class TClass>
+    struct TFunctionTraits<TResult (TClass::*)() const>
+    {
+        typedef TResult TResult_;
+
+        struct TCheck_ : TCheck
+        {
+            typedef const TClass* TArg_;
+            virtual bool Check(const NBacktrace::TBacktrace&,
+                const TClass*) const = 0;
+        };
+
+        static const unsigned Arity_ = 1;
+    };
+
+    template <class TResult, class TClass, class TArg>
+    struct TFunctionTraits<TResult (TClass::*)(TArg) const>
+    {
+        typedef TResult TResult_;
+
+        struct TCheck_ : TCheck
+        {
+            typedef const TClass* TArg1_;
+            typedef TArg TArg2_;
+            virtual bool Check(const NBacktrace::TBacktrace&,
+                const TClass*, TArg) const = 0;
+        };
+
+        static const unsigned Arity_ = 2;
+    };
+
+    template <class TResult, class TClass, class TArg1, class TArg2>
+    struct TFunctionTraits<TResult (TClass::*)(TArg1, TArg2) const>
+    {
+        typedef TResult TResult_;
+
+        struct TCheck_ : TCheck
+        {
+            typedef const TClass* TArg1_;
+            typedef TArg1 TArg2_;
+            typedef TArg2 TArg3_;
+            virtual bool Check(const NBacktrace::TBacktrace&,
+                const TClass*, TArg1, TArg2) const = 0;
+        };
+
+        static const unsigned Arity_ = 3;
+    };
+
+    template <class TResult, class TClass, class TArg1, class TArg2,
+        class TArg3>
+    struct TFunctionTraits<TResult (TClass::*)(TArg1, TArg2, TArg3) const>
+    {
+        typedef TResult TResult_;
+
+        struct TCheck_ : TCheck
+        {
+            typedef const TClass* TArg1_;
+            typedef TArg1 TArg2_;
+            typedef TArg2 TArg3_;
+            typedef TArg3 TArg4_;
+            virtual bool Check(const NBacktrace::TBacktrace&,
+                const TClass*, TArg1, TArg2, TArg3) const = 0;
+        };
+
+        static const unsigned Arity_ = 4;
+    };
 }
 
 #endif

@@ -324,6 +324,117 @@ namespace NUberMock
             return (pthis->*symbol)(arg1, arg2, arg3);
         }
     };
+
+    template <class TResult, class TClass>
+    struct TMockHandler<TResult (TClass::*)() const>:
+        TMockHandlerBase<TResult (TClass::*)() const>
+    {
+        typedef TResult (TClass::* TFunc_)() const;
+        static TResult Handle(TFunc_ func, const TClass* pthis)
+        {
+            const NBacktrace::TBacktrace& backtrace =
+                NBacktrace::GetBacktrace(3);
+            typedef typename TMockHandlerBase<TFunc_>::TMocks_ TMocks_;
+            const TMocks_& mocks = TMockHandlerBase<TFunc_>::GetMocks();
+            for (typename TMocks_::const_iterator iter = mocks.begin(),
+                end = mocks.end(); iter != end; ++iter)
+            {
+                if (iter->Func_ == func
+                    && iter->Check_->Check(backtrace, pthis))
+                {
+                    return iter->Result_;
+                }
+            }
+            TFunc_ symbol = 0;
+            *reinterpret_cast<void**>(&symbol) = dlsym(RTLD_NEXT,
+                NBacktrace::GetCurrentFrame(2).Symbol_);
+            return (pthis->*symbol)();
+        }
+    };
+
+    template <class TResult, class TClass, class TArg>
+    struct TMockHandler<TResult (TClass::*)(TArg) const>:
+        TMockHandlerBase<TResult (TClass::*)(TArg) const>
+    {
+        typedef TResult (TClass::* TFunc_)(TArg) const;
+        static TResult Handle(TFunc_ func, const TClass* pthis, const TArg& arg)
+        {
+            const NBacktrace::TBacktrace& backtrace =
+                NBacktrace::GetBacktrace(3);
+            typedef typename TMockHandlerBase<TFunc_>::TMocks_ TMocks_;
+            const TMocks_& mocks = TMockHandlerBase<TFunc_>::GetMocks();
+            for (typename TMocks_::const_iterator iter = mocks.begin(),
+                end = mocks.end(); iter != end; ++iter)
+            {
+                if (iter->Func_ == func
+                    && iter->Check_->Check(backtrace, pthis, arg))
+                {
+                    return iter->Result_;
+                }
+            }
+            TFunc_ symbol = 0;
+            *reinterpret_cast<void**>(&symbol) = dlsym(RTLD_NEXT,
+                NBacktrace::GetCurrentFrame(2).Symbol_);
+            return (pthis->*symbol)(arg);
+        }
+    };
+
+    template <class TResult, class TClass, class TArg1, class TArg2>
+    struct TMockHandler<TResult (TClass::*)(TArg1, TArg2) const>:
+        TMockHandlerBase<TResult (TClass::*)(TArg1, TArg2) const>
+    {
+        typedef TResult (TClass::* TFunc_)(TArg1, TArg2) const;
+        static TResult Handle(TFunc_ func, const TClass* pthis,
+            const TArg1& arg1, const TArg2& arg2)
+        {
+            const NBacktrace::TBacktrace& backtrace =
+                NBacktrace::GetBacktrace(3);
+            typedef typename TMockHandlerBase<TFunc_>::TMocks_ TMocks_;
+            const TMocks_& mocks = TMockHandlerBase<TFunc_>::GetMocks();
+            for (typename TMocks_::const_iterator iter = mocks.begin(),
+                end = mocks.end(); iter != end; ++iter)
+            {
+                if (iter->Func_ == func
+                    && iter->Check_->Check(backtrace, pthis, arg1, arg2))
+                {
+                    return iter->Result_;
+                }
+            }
+            TFunc_ symbol = 0;
+            *reinterpret_cast<void**>(&symbol) = dlsym(RTLD_NEXT,
+                NBacktrace::GetCurrentFrame(2).Symbol_);
+            return (pthis->*symbol)(arg1, arg2);
+        }
+    };
+
+    template <class TResult, class TClass, class TArg1, class TArg2,
+        class TArg3>
+    struct TMockHandler<TResult (TClass::*)(TArg1, TArg2, TArg3) const>:
+        TMockHandlerBase<TResult (TClass::*)(TArg1, TArg2, TArg3) const>
+    {
+        typedef TResult (TClass::* TFunc_)(TArg1, TArg2, TArg3) const;
+        static TResult Handle(TFunc_ func, const TClass* pthis,
+            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3)
+        {
+            const NBacktrace::TBacktrace& backtrace =
+                NBacktrace::GetBacktrace(3);
+            typedef typename TMockHandlerBase<TFunc_>::TMocks_ TMocks_;
+            const TMocks_& mocks = TMockHandlerBase<TFunc_>::GetMocks();
+            for (typename TMocks_::const_iterator iter = mocks.begin(),
+                end = mocks.end(); iter != end; ++iter)
+            {
+                if (iter->Func_ == func
+                    && iter->Check_->Check(backtrace, pthis, arg1, arg2, arg3))
+                {
+                    return iter->Result_;
+                }
+            }
+            TFunc_ symbol = 0;
+            *reinterpret_cast<void**>(&symbol) = dlsym(RTLD_NEXT,
+                NBacktrace::GetCurrentFrame(2).Symbol_);
+            return (pthis->*symbol)(arg1, arg2, arg3);
+        }
+    };
 }
 
 #endif

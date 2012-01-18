@@ -21,43 +21,49 @@
 #define __UBERMOCK_HPP_2011_11_13__
 
 #include "mockhandler.hpp"
+#include "symbolloader.hpp"
 #include "traits.hpp"
 
 namespace NUberMock
 {
     template <class TFunc>
     static inline typename TFunctionTraits<TFunc>::TResult_ HandleMock(
-        TFunc func)
+        TFunc func, const TSymbolLoader& loader = TSymbolLoader())
     {
-        return TMockHandler<TFunc>::Handle(func);
+        return TMockHandler<TFunc>::Handle(func, loader);
     }
 
     template <class TFunc, class TArg>
     static inline typename TFunctionTraits<TFunc>::TResult_ HandleMock(
-        TFunc func, TArg arg)
+        TFunc func, const TArg& arg,
+        const TSymbolLoader& loader = TSymbolLoader())
     {
-        return TMockHandler<TFunc>::Handle(func, arg);
+        return TMockHandler<TFunc>::Handle(func, arg, loader);
     }
 
     template <class TFunc, class TArg1, class TArg2>
     static inline typename TFunctionTraits<TFunc>::TResult_ HandleMock(
-        TFunc func, TArg1 arg1, TArg2 arg2)
+        TFunc func, const TArg1& arg1, const TArg2& arg2,
+        const TSymbolLoader& loader = TSymbolLoader())
     {
-        return TMockHandler<TFunc>::Handle(func, arg1, arg2);
+        return TMockHandler<TFunc>::Handle(func, arg1, arg2, loader);
     }
 
     template <class TFunc, class TArg1, class TArg2, class TArg3>
     static inline typename TFunctionTraits<TFunc>::TResult_ HandleMock(
-        TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3)
+        TFunc func, const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+        const TSymbolLoader& loader = TSymbolLoader())
     {
-        return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3);
+        return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3, loader);
     }
 
     template <class TFunc, class TArg1, class TArg2, class TArg3, class TArg4>
     static inline typename TFunctionTraits<TFunc>::TResult_ HandleMock(
-        TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
+        TFunc func, const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+        const TArg4& arg4, const TSymbolLoader& loader = TSymbolLoader())
     {
-        return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3, arg4);
+        return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3, arg4,
+            loader);
     }
 }
 

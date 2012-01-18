@@ -1,8 +1,11 @@
 lib:
-	g++ -shared lib.cpp -o liblib.so
+	g++ -shared lib.cpp -o liblib.so -O3
 
-exe: lib
-	g++ -ansi -pedantic-errors -Werror -Wall -Wextra -I/home/dpotapov/dev/reinvented-wheels/ubermock ../symbolloader.cpp mock.cpp -ggdb -lbacktracexx -fmax-errors=4 -llib -L.
+mock:
+	g++ -ansi -pedantic-errors -Werror -Wall -Wextra -I/home/dpotapov/dev/reinvented-wheels/ubermock -shared ../symbolloader.cpp -O3 -o libmock.so
+
+exe: mock lib
+	g++ -ansi -pedantic-errors -Werror -Wall -Wextra -I/home/dpotapov/dev/reinvented-wheels/ubermock mock.cpp -lmock -lbacktracexx -O3 -llib -L.
 
 all: exe lib
 	LD_LIBRARY_PATH=. ./a.out

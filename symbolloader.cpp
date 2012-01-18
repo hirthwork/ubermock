@@ -24,7 +24,18 @@
 #include "symbolloader.hpp"
 
 NUberMock::TSymbolLoader::TSymbolLoader()
-    : FunctionPointer_(dlsym(RTLD_NEXT, NBacktrace::GetCurrentFrame(3).Symbol_))
+    : FunctionPointer_(dlsym(RTLD_NEXT, NBacktrace::GetCurrentFrame(1).Symbol_))
+    , Backtrace_(new NBacktrace::TBacktrace(NBacktrace::GetBacktrace(2)))
 {
+}
+
+NUberMock::TSymbolLoader::~TSymbolLoader()
+{
+    delete Backtrace_;
+}
+
+const NBacktrace::TBacktrace& NUberMock::TSymbolLoader::GetBacktrace() const
+{
+    return *Backtrace_;
 }
 

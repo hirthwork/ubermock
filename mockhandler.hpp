@@ -22,8 +22,6 @@
 
 #include <list>
 
-#include <backtrace/backtrace.hpp>
-
 #include "symbolloader.hpp"
 #include "traits.hpp"
 
@@ -81,7 +79,7 @@ namespace NUberMock
             TResult_ result)
         {
             TMock_ mock = {GetId(), func, check, result};
-            GetMocks().push_back(mock);
+            GetMocks().push_front(mock);
             return mock.Id_;
         }
 
@@ -100,6 +98,167 @@ namespace NUberMock
         }
     };
 
+    struct TFunctionCaller
+    {
+        template <class TFunc, class TArg>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            const TArg& arg)
+        {
+            return func(arg);
+        }
+
+        template <class TFunc, class TArg1, class TArg2>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            const TArg1& arg1, const TArg2& arg2)
+        {
+            return func(arg1, arg2);
+        }
+
+        template <class TFunc, class TArg1, class TArg2, class TArg3>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3)
+        {
+            return func(arg1, arg2, arg3);
+        }
+
+        template <class TFunc, class TArg1, class TArg2, class TArg3,
+            class TArg4>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+            const TArg4& arg4)
+        {
+            return func(arg1, arg2, arg3, arg4);
+        }
+    };
+
+    struct TMemberFunctionCaller
+    {
+        template <class TFunc, class TClass>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            TClass* pthis)
+        {
+            return (pthis->*func)();
+        }
+
+        template <class TFunc, class TClass, class TArg>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            TClass* pthis, const TArg& arg)
+        {
+            return (pthis->*func)(arg);
+        }
+
+        template <class TFunc, class TClass, class TArg1, class TArg2>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            TClass* pthis, const TArg1& arg1, const TArg2& arg2)
+        {
+            return (pthis->*func)(arg1, arg2);
+        }
+
+        template <class TFunc, class TClass, class TArg1, class TArg2,
+            class TArg3>
+        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+            TClass* pthis, const TArg1& arg1, const TArg2& arg2,
+            const TArg3& arg3)
+        {
+            return (pthis->*func)(arg1, arg2, arg3);
+        }
+    };
+
+    template <class TFunc>
+    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+        TFunc func, const TSymbolLoader& loader)
+    {
+        typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
+        const TMocks_& mocks = TMockStorage<TFunc>::GetMocks();
+        for (typename TMocks_::const_iterator iter = mocks.begin(),
+            end = mocks.end(); iter != end; ++iter)
+        {
+            if (iter->Func_ == func
+                && iter->Check_->Check(loader.GetBacktrace()))
+            {
+                return iter->Result_;
+            }
+        }
+        return TFunc(loader)();
+    }
+
+    template <class TCaller, class TFunc, class TArg>
+    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+        TFunc func, const TArg& arg, const TSymbolLoader& loader)
+    {
+        typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
+        const TMocks_& mocks = TMockStorage<TFunc>::GetMocks();
+        for (typename TMocks_::const_iterator iter = mocks.begin(),
+            end = mocks.end(); iter != end; ++iter)
+        {
+            if (iter->Func_ == func
+                && iter->Check_->Check(loader.GetBacktrace(), arg))
+            {
+                return iter->Result_;
+            }
+        }
+        return TCaller::Call(TFunc(loader), arg);
+    }
+
+    template <class TCaller, class TFunc, class TArg1, class TArg2>
+    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+        TFunc func, const TArg1& arg1, const TArg2& arg2,
+        const TSymbolLoader& loader)
+    {
+        typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
+        const TMocks_& mocks = TMockStorage<TFunc>::GetMocks();
+        for (typename TMocks_::const_iterator iter = mocks.begin(),
+            end = mocks.end(); iter != end; ++iter)
+        {
+            if (iter->Func_ == func
+                && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2))
+            {
+                return iter->Result_;
+            }
+        }
+        return TCaller::Call(TFunc(loader), arg1, arg2);
+    }
+
+    template <class TCaller, class TFunc, class TArg1, class TArg2, class TArg3>
+    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+        TFunc func, const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+        const TSymbolLoader& loader)
+    {
+        typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
+        const TMocks_& mocks = TMockStorage<TFunc>::GetMocks();
+        for (typename TMocks_::const_iterator iter = mocks.begin(),
+            end = mocks.end(); iter != end; ++iter)
+        {
+            if (iter->Func_ == func
+                && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2, arg3))
+            {
+                return iter->Result_;
+            }
+        }
+        return TCaller::Call(TFunc(loader), arg1, arg2, arg3);
+    }
+
+    template <class TCaller, class TFunc, class TArg1, class TArg2, class TArg3,
+        class TArg4>
+    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+        TFunc func, const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+        const TArg4& arg4, const TSymbolLoader& loader)
+    {
+        typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
+        const TMocks_& mocks = TMockStorage<TFunc>::GetMocks();
+        for (typename TMocks_::const_iterator iter = mocks.begin(),
+            end = mocks.end(); iter != end; ++iter)
+        {
+            if (iter->Func_ == func
+                && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2, arg3,
+                    arg4))
+            {
+                return iter->Result_;
+            }
+        }
+        return TCaller::Call(TFunc(loader), arg1, arg2, arg3, arg4);
+    }
+
     template <class TFunc>
     struct TMockHandler;
 
@@ -107,186 +266,91 @@ namespace NUberMock
     struct TMockHandler<TResult (*)()>
     {
         typedef TResult (*TFunc_)();
-        static TResult Handle(TFunc_ func)
+        static inline TResult Handle(TFunc_ func, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace))
-                {
-                    return iter->Result_;
-                }
-            }
-            return TFunc_(TSymbolLoader())();
+            return CheckAndHandle(func, loader);
         }
     };
 
     template <class TResult, class TArg>
     struct TMockHandler<TResult (*)(TArg)>
     {
-        typedef TResult (*TFunc_)(TArg);
-        static TResult Handle(TFunc_ func, const TArg& arg)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TArg& arg,
+            const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, arg))
-                {
-                    return iter->Result_;
-                }
-            }
-            return TFunc_(TSymbolLoader())(arg);
+            return CheckAndHandle<TFunctionCaller>(func, arg, loader);
         }
     };
 
     template <class TResult, class TArg1, class TArg2>
     struct TMockHandler<TResult (*)(TArg1, TArg2)>
     {
-        typedef TResult (*TFunc_)(TArg1, TArg2);
-        static TResult Handle(TFunc_ func, const TArg1& arg1, const TArg2& arg2)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TArg1& arg1,
+            const TArg2& arg2, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, arg1, arg2))
-                {
-                    return iter->Result_;
-                }
-            }
-            return TFunc_(TSymbolLoader())(arg1, arg2);
+            return CheckAndHandle<TFunctionCaller>(func, arg1, arg2, loader);
         }
     };
 
     template <class TResult, class TArg1, class TArg2, class TArg3>
     struct TMockHandler<TResult (*)(TArg1, TArg2, TArg3)>
     {
-        typedef TResult (*TFunc_)(TArg1, TArg2, TArg3);
-        static TResult Handle(TFunc_ func, const TArg1& arg1, const TArg2& arg2,
-            const TArg3& arg3)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TArg1& arg1,
+            const TArg2& arg2, const TArg3& arg3, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, arg1, arg2, arg3))
-                {
-                    return iter->Result_;
-                }
-            }
-            return TFunc_(TSymbolLoader())(arg1, arg2, arg3);
+            return CheckAndHandle<TFunctionCaller>(func, arg1, arg2, arg3,
+                loader);
         }
     };
 
     template <class TResult, class TArg1, class TArg2, class TArg3, class TArg4>
     struct TMockHandler<TResult (*)(TArg1, TArg2, TArg3, TArg4)>
     {
-        typedef TResult (*TFunc_)(TArg1, TArg2, TArg3, TArg4);
-        static TResult Handle(TFunc_ func, const TArg1& arg1, const TArg2& arg2,
-            const TArg3& arg3, const TArg4& arg4)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TArg1& arg1,
+            const TArg2& arg2, const TArg3& arg3, const TArg4& arg4,
+            const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, arg1, arg2, arg3, arg4))
-                {
-                    return iter->Result_;
-                }
-            }
-            return TFunc_(TSymbolLoader())(arg1, arg2, arg3, arg4);
+            return CheckAndHandle<TFunctionCaller>(func, arg1, arg2, arg3, arg4,
+                loader);
         }
     };
 
     template <class TResult, class TClass>
     struct TMockHandler<TResult (TClass::*)()>
     {
-        typedef TResult (TClass::* TFunc_)();
-        static TResult Handle(TFunc_ func, TClass* pthis)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, TClass* pthis,
+            const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))();
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, loader);
         }
     };
 
     template <class TResult, class TClass, class TArg>
     struct TMockHandler<TResult (TClass::*)(TArg)>
     {
-        typedef TResult (TClass::* TFunc_)(TArg);
-        static TResult Handle(TFunc_ func, TClass* pthis, const TArg& arg)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, TClass* pthis,
+            const TArg& arg, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis, arg))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))(arg);
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, arg,
+                loader);
         }
     };
 
     template <class TResult, class TClass, class TArg1, class TArg2>
     struct TMockHandler<TResult (TClass::*)(TArg1, TArg2)>
     {
-        typedef TResult (TClass::* TFunc_)(TArg1, TArg2);
-        static TResult Handle(TFunc_ func, TClass* pthis,
-            const TArg1& arg1, const TArg2& arg2)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, TClass* pthis,
+            const TArg1& arg1, const TArg2& arg2, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis, arg1, arg2))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))(arg1, arg2);
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, arg1,
+                arg2, loader);
         }
     };
 
@@ -294,94 +358,48 @@ namespace NUberMock
         class TArg3>
     struct TMockHandler<TResult (TClass::*)(TArg1, TArg2, TArg3)>
     {
-        typedef TResult (TClass::* TFunc_)(TArg1, TArg2, TArg3);
-        static TResult Handle(TFunc_ func, TClass* pthis,
-            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, TClass* pthis,
+            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+            const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis, arg1, arg2, arg3))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))(arg1, arg2, arg3);
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, arg1,
+                arg2, arg3, loader);
         }
     };
 
     template <class TResult, class TClass>
     struct TMockHandler<TResult (TClass::*)() const>
     {
-        typedef TResult (TClass::* TFunc_)() const;
-        static TResult Handle(TFunc_ func, const TClass* pthis)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TClass* pthis,
+            const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))();
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, loader);
         }
     };
 
     template <class TResult, class TClass, class TArg>
     struct TMockHandler<TResult (TClass::*)(TArg) const>
     {
-        typedef TResult (TClass::* TFunc_)(TArg) const;
-        static TResult Handle(TFunc_ func, const TClass* pthis, const TArg& arg)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TClass* pthis,
+            const TArg& arg, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis, arg))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))(arg);
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, arg,
+                loader);
         }
     };
 
     template <class TResult, class TClass, class TArg1, class TArg2>
     struct TMockHandler<TResult (TClass::*)(TArg1, TArg2) const>
     {
-        typedef TResult (TClass::* TFunc_)(TArg1, TArg2) const;
-        static TResult Handle(TFunc_ func, const TClass* pthis,
-            const TArg1& arg1, const TArg2& arg2)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TClass* pthis,
+            const TArg1& arg1, const TArg2& arg2, const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis, arg1, arg2))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))(arg1, arg2);
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, arg1,
+                arg2, loader);
         }
     };
 
@@ -389,24 +407,13 @@ namespace NUberMock
         class TArg3>
     struct TMockHandler<TResult (TClass::*)(TArg1, TArg2, TArg3) const>
     {
-        typedef TResult (TClass::* TFunc_)(TArg1, TArg2, TArg3) const;
-        static TResult Handle(TFunc_ func, const TClass* pthis,
-            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3)
+        template <class TFunc>
+        static inline TResult Handle(TFunc func, const TClass* pthis,
+            const TArg1& arg1, const TArg2& arg2, const TArg3& arg3,
+            const TSymbolLoader& loader)
         {
-            const NBacktrace::TBacktrace& backtrace =
-                NBacktrace::GetBacktrace(3);
-            typedef typename TMockStorage<TFunc_>::TMocks_ TMocks_;
-            const TMocks_& mocks = TMockStorage<TFunc_>::GetMocks();
-            for (typename TMocks_::const_iterator iter = mocks.begin(),
-                end = mocks.end(); iter != end; ++iter)
-            {
-                if (iter->Func_ == func
-                    && iter->Check_->Check(backtrace, pthis, arg1, arg2, arg3))
-                {
-                    return iter->Result_;
-                }
-            }
-            return (pthis->*TFunc_(TSymbolLoader()))(arg1, arg2, arg3);
+            return CheckAndHandle<TMemberFunctionCaller>(func, pthis, arg1,
+                arg2, arg3, loader);
         }
     };
 }

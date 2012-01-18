@@ -20,20 +20,33 @@
 #ifndef __SYMBOL_LOADER_2012_01_16__
 #define __SYMBOL_LOADER_2012_01_16__
 
+namespace NBacktrace
+{
+    struct TBacktrace;
+}
+
 namespace NUberMock
 {
     class TSymbolLoader
     {
         void* const FunctionPointer_;
+        const NBacktrace::TBacktrace* const Backtrace_;
+
+        TSymbolLoader(const TSymbolLoader&);
+        TSymbolLoader& operator = (const TSymbolLoader&);
 
     public:
         TSymbolLoader();
+        ~TSymbolLoader();
+
+        const NBacktrace::TBacktrace& GetBacktrace() const;
 
         template <class TFunc>
         inline operator TFunc() const
         {
             TFunc function = 0;
-            *reinterpret_cast<void**>(&function) = FunctionPointer_;
+            void** p = reinterpret_cast<void**>(&function);
+            *p = FunctionPointer_;
             return function;
         }
     };

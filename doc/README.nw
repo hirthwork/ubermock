@@ -23,9 +23,9 @@ impossible situations, emulate hardware failure etc.
 Most existing C++ mocking frameworks has two restrictions:
 \begin{enumerate}
 \item
-They mocks only virtual functions.
+Mocking available only for virtual functions.
 \item
-They unable to mock standard library functions like [[fopen]] or [[scanf]].
+No mocking available for standard library functions like [[fopen]] or [[scanf]].
 \end{enumerate}
 
 UberMock doesn't have such restrictions. You can easily emulate

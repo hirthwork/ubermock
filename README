@@ -25,8 +25,8 @@ impossible situations, emulate hardware failure etc.
 
 Most existing C++ mocking frameworks has two restrictions:
 
-1. They mocks only virtual functions.
-2. They unable to mock standard library functions like fopen or scanf.
+1. Mocking available only for virtual functions.
+2. No mocking available for standard library functions like fopen or scanf.
 
 UberMock doesn’t have such restrictions. You can easily emulate stdin/stdout,
 virtual files with configs for program being tested, or even network failures at

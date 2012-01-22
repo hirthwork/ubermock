@@ -1,11 +1,19 @@
+import testing ;
 import c-std ;
 import c++-std ;
 import stlport ;
+import noweb ;
 
 use-project /test-base : test-base ;
 
+unit-test mock-time
+    : ../doc/README.nw /ubermock//ubermock
+    : <chunk>mock-time.cpp <chunk-type>cpp
+    ;
+
 alias basic-test
     : test-base
+      mock-time
     ;
 
 alias compilers-test : basic-test/$(FULL_COMPILERS_TEST:E=) ;

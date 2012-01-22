@@ -32,11 +32,11 @@ namespace NUberMock
         void* const FunctionPointer_;
         const NBacktrace::TBacktrace* const Backtrace_;
 
-        TSymbolLoader(const TSymbolLoader&);
         TSymbolLoader& operator = (const TSymbolLoader&);
 
     public:
         TSymbolLoader();
+        TSymbolLoader(const TSymbolLoader& loader);
         ~TSymbolLoader();
 
         const NBacktrace::TBacktrace& GetBacktrace() const;

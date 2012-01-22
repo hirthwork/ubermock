@@ -1,0 +1,173 @@
+% Copyright 2012 by Dmitry Potapov <potapov.d@gmail.com>.
+% All rights reserved.
+% See file COPYING for more information.
+
+\documentclass{article}
+\usepackage{noweb}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=black]{hyperref}
+\begin{document}
+\author{\href{mailto:potapov.d@gmail.com}{Dmitry Potapov}}
+\title{\textbf{UberMock} --- C/C++ mocking framework}
+\maketitle
+
+\tableofcontents
+
+\pagebreak
+
+\section{Introduction}
+Mock-objects is the heart of Test Driven Development. Functions mocking allows
+to test complex software piece by piece, simulate various possible and
+impossible situations, emulate hardware failure etc.
+
+\section{Rationale}
+Most existing C++ mocking frameworks has two restrictions:
+\begin{enumerate}
+\item
+They mocks only virtual functions.
+\item
+They unable to mock standard library functions like [[fopen]] or [[scanf]].
+\end{enumerate}
+
+UberMock doesn't have such restrictions. You can easily emulate
+[[stdin]]/[[stdout]], virtual files with configs for program being tested, or
+even network failures at any execution point, to test how your program handles
+such failures.
+
+\section{Installation}
+
+\subsection{Prerequisites}
+\begin{enumerate}
+\item
+Linux or FreeBSD (I haven't performed any testing on other *BSD systems, as
+well as on any non-BSD Unix distribution)
+\item
+\href{http://www.boost.org/boost-build2/}{Boost.Build}
+\item
+[[glibc]] (other libc implementations wasn't tested yet)
+\item
+[[g++]] (as Boost.Build uses [[g++]] even for pure C targets build) or
+[[clang++]]
+\item
+\href{https://github.com/analizer/backtrace}{Backtrace library}
+\end{enumerate}
+
+\subsection{Library installation}
+Change your current working directory to UberMock source distribution root
+and execute the following command:
+\begin{verbatim}
+bjam /ubermock//ubermock-install release
+\end{verbatim}
+
+After this UberMock library will be built and installed among with required
+headers. The default installation prefix is [[/usr/local]] which can be
+overridden using [[--prefix=<installation path>]] option:
+\begin{verbatim}
+bjam /ubermock//ubermock-install release --prefix=/usr
+\end{verbatim}
+
+\subsection{Static library installation}
+UberMock can be built as static library by adding [[link=static]] option to
+bjam invocation command. It is possible to build and install static and shared
+libraries with single command:
+\begin{verbatim}
+bjam /ubermock//ubermock-install release link=static,shared
+\end{verbatim}
+
+\subsection{Debug version installation}
+Debug version of UberMock library can be installed by invoking installation
+command without specifying [[release]] build variant in command line:
+\begin{verbatim}
+bjam /ubermock//ubermock-install
+\end{verbatim}
+
+\subsection{Sanity testing}
+In order to ensure that [[backtrace]] is sane on current environment, unit-tests
+can be used:
+\begin{verbatim}
+bjam test
+\end{verbatim}
+
+In this case, unit-tests will be built, executed and their status will be
+reported.  For most users it is enough to check the return code of the command
+specified above. As for most Linux utilities zero return code states for
+successful tests executions without failures.
+Boost.Test is also required to be installed in order to execute tests.
+
+\section{Quick Example}
+
+Let's write the quick example that will mock [[time]] function.  First of all we
+need to include [[ubermock/registrar.hpp]] header file, as it provides core
+mocking functionality and [[ubermock/ubermock.hpp]] header file, which contains
+mocking helpers definition. As we're going to mock [[time]] function, we need to
+include [[ctime]] header where this function is declared.  [[iostream]] will be
+used for values output.
+<<mock-time.cpp>>=
+#include <ubermock/registrar.hpp>
+#include <ubermock/ubermock.hpp>
+#include <ctime>
+#include <iostream>
+
+<<mock declaration>>
+
+int main()
+{
+    <<mock usage>>
+}
+
+@ The main idea of UberMock is to provide own implementation of mocked fuction
+that will behave like mocked function except special circumstances defined by
+testing environment:
+<<mock declaration>>=
+time_t time(time_t* t) throw ()
+{
+    return NUberMock::HandleMock(time, t);
+}
+
+@ Here, we calls UberMock helper function that will resolve mocked function,
+pass parameter to it and return value from the mocked function. This behaviour
+can be changed by return value registering. Once value is registered using
+[[TMockRegistrar]] or [[TSimpleMockRegistrar]] functions it will be returned by
+the mocked function if parameters passed to function meets user-specified
+predicate.
+
+Let's append two predicates to the mock declaration. One will match [[0x1]]
+pointer passed to [[time]] function, and another one will match [[0x2]]:
+<<mock declaration>>=
+bool Check1(time_t* t)
+{
+    return t == (time_t*)1;
+}
+
+bool Check2(time_t* t)
+{
+    return t == (time_t*)2;
+}
+
+@ Now we can register two values associated with these checks, which will be
+returned instead of values those can be returned by [[time]]:
+<<mock usage>>=
+NUberMock::TSimpleMockRegistrar registrar1(time, Check1, (
+    time(NULL)/3600) * 3600);
+NUberMock::TSimpleMockRegistrar registrar2(time, Check2,
+    ((time(NULL) + 3599)/3600) * 3600);
+
+@ So, we have registered time rounded down to hour for [[0x1]] pointer and time
+rounded up to hour for [[0x2]] pointer. Now we can print the results:
+<<mock usage>>=
+time_t t;
+std::cout << time((time_t*)1) << std::endl;
+std::cout << time(NULL) << std::endl;
+std::cout << time((&t)) << std::endl;
+std::cout << time((time_t*)2) << std::endl;
+
+@ As you can see, calls to [[time]] which doesn't match predicates aren't
+affected:
+\begin{verbatim}
+1327258800
+1327260035
+1327260035
+1327262400
+\end{verbatim}
+
+\end{document}
+

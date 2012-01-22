@@ -30,6 +30,12 @@ NUberMock::TSymbolLoader::TSymbolLoader()
 {
 }
 
+NUberMock::TSymbolLoader::TSymbolLoader(const NUberMock::TSymbolLoader& loader)
+    : FunctionPointer_(loader.FunctionPointer_)
+    , Backtrace_(new NBacktrace::TBacktrace(*loader.Backtrace_))
+{
+}
+
 NUberMock::TSymbolLoader::~TSymbolLoader()
 {
     delete Backtrace_;

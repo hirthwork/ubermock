@@ -1,0 +1,21 @@
+import package ;
+import stlport ;
+
+project
+    : requirements <include>. <warnings>all <warnings-as-errors>on
+      <stdlib>stlport:<define>_GLIBCXX_HAVE_WCSFTIME=1
+      <cflags>-ansi <cxxflags>-ansi
+      <cflags>-Wextra <cxxflags>-Wextra
+    ;
+
+use-project /ubermock : ubermock ;
+
+alias user-manual : doc//user-manual ;
+package.install-data user-manual-install : doc/ubermock : user-manual ;
+explicit user-manual user-manual-install ;
+
+alias test : tests//test-base ;
+alias basic-test : tests//basic-test ;
+alias mega-test : tests//mega-test ;
+explicit test mega-test ;
+

@@ -1,0 +1,37 @@
+import feature ;
+import testing ;
+
+feature.feature testing-launcher : none valgrind : propagated composite ;
+
+path-constant SUPPRESSIONS-FILE : glibc.supp ;
+feature.compose <testing-launcher>valgrind
+    : <testing.launcher>"valgrind --leak-check=full --error-exitcode=1 --track-origins=yes -q --suppressions=$(SUPPRESSIONS-FILE)"
+    ;
+
+project
+    : requirements <target-os>freebsd:<include>/usr/local/include
+    ;
+
+compile double-inclusion-mockhandler.cpp ;
+compile double-inclusion-registrar.cpp ;
+compile double-inclusion-symbolloader.cpp ;
+compile double-inclusion-traits.cpp ;
+compile double-inclusion-ubermock.cpp ;
+
+lib mockapi : mockapi.cpp : <link>shared ;
+
+unit-test test-nullary
+    : mocks.cpp test-nullary.cpp mockapi /ubermock//ubermock ;
+
+unit-test test-unary
+    : mocks.cpp test-unary.cpp mockapi /ubermock//ubermock ;
+
+unit-test test-binary
+    : mocks.cpp test-binary.cpp mockapi /ubermock//ubermock ;
+
+unit-test test-ternary
+    : mocks.cpp test-ternary.cpp mockapi /ubermock//ubermock ;
+
+unit-test test-quaternary
+    : mocks.cpp test-quaternary.cpp mockapi /ubermock//ubermock ;
+

@@ -290,49 +290,57 @@ namespace NUberMock
             UseBacktrace>::CreateCheck(check);
     }
 
-    class TMockRegistrar
+    class TRegistrarBase
     {
         const TCleanerBase* Cleaner_;
 
-        TMockRegistrar();
-        TMockRegistrar(const TMockRegistrar&);
-        TMockRegistrar& operator =(const TMockRegistrar&);
+        TRegistrarBase();
+        TRegistrarBase(const TRegistrarBase&);
+        TRegistrarBase& operator =(const TRegistrarBase&);
 
     public:
-        template <class TFunc, class TCheck>
-        inline TMockRegistrar(TFunc func, TCheck check,
-            typename TFunctionTraits<TFunc>::TResult_ result)
-            : Cleaner_(new TCleaner<TFunc>(TMockStorage<TFunc>::AddMock(func,
-                CreateCheck<TFunc, true>(check), result)))
+        inline TRegistrarBase(const TCleanerBase* cleaner)
+            : Cleaner_(cleaner)
         {
         }
 
-        inline ~TMockRegistrar()
+        inline ~TRegistrarBase()
         {
-            delete Cleaner_;
+            if (Cleaner_)
+            {
+                delete Cleaner_;
+            }
+        }
+
+        inline void Release()
+        {
+            if (Cleaner_)
+            {
+                delete Cleaner_;
+                Cleaner_ = 0;
+            }
         }
     };
 
-    class TSimpleMockRegistrar
+    struct TMockRegistrar: TRegistrarBase
     {
-        const TCleanerBase* Cleaner_;
+        template <class TFunc, class TCheck>
+        inline TMockRegistrar(TFunc func, TCheck check,
+            typename TFunctionTraits<TFunc>::TResult_ result)
+            : TRegistrarBase(new TCleaner<TFunc>(TMockStorage<TFunc>::AddMock(
+                func, CreateCheck<TFunc, true>(check), result)))
+        {
+        }
+    };
 
-        TSimpleMockRegistrar();
-        TSimpleMockRegistrar(const TMockRegistrar&);
-        TSimpleMockRegistrar& operator =(const TMockRegistrar&);
-
-    public:
+    struct TSimpleMockRegistrar: TRegistrarBase
+    {
         template <class TFunc, class TCheck>
         inline TSimpleMockRegistrar(TFunc func, TCheck check,
             typename TFunctionTraits<TFunc>::TResult_ result)
-            : Cleaner_(new TCleaner<TFunc>(TMockStorage<TFunc>::AddMock(func,
-                CreateCheck<TFunc, false>(check), result)))
+            : TRegistrarBase(new TCleaner<TFunc>(TMockStorage<TFunc>::AddMock(
+                func, CreateCheck<TFunc, false>(check), result)))
         {
-        }
-
-        inline ~TSimpleMockRegistrar()
-        {
-            delete Cleaner_;
         }
     };
 }

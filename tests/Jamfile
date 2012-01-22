@@ -1,0 +1,44 @@
+import c-std ;
+import c++-std ;
+import stlport ;
+
+use-project /test-base : test-base ;
+
+alias basic-test
+    : test-base
+    ;
+
+alias compilers-test : basic-test/$(FULL_COMPILERS_TEST:E=) ;
+
+alias stdlib-test
+    : compilers-test/<stdlib>native
+      compilers-test/<stdlib>stlport
+    ;
+
+alias variant-test
+    : stdlib-test/<variant>debug
+      stdlib-test/<variant>release
+    ;
+
+alias launcher-test
+    : variant-test/<testing-launcher>valgrind
+    ;
+
+alias link-test
+    : launcher-test/<link>static
+      launcher-test/<link>shared
+    ;
+
+alias mega-test : link-test ;
+
+explicit
+    test-base
+    basic-test
+    compilers-test
+    stdlib-test
+    variant-test
+    launcher-test
+    link-test
+    mega-test
+    ;
+

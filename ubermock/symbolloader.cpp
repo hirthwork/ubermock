@@ -20,6 +20,7 @@
 #include <dlfcn.h>
 
 #include <backtrace/backtrace.hpp>
+#include <backtrace/current-frame.hpp>
 
 #include "symbolloader.hpp"
 

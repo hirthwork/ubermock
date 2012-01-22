@@ -1,0 +1,24 @@
+import package ;
+
+lib dl : : <link>shared ;
+
+alias dl-lib : dl ;
+alias dl-lib : : <target-os>freebsd ;
+
+lib backtrace backtracexx stlport ;
+
+alias backtrace-libs : backtracexx : <link>shared ;
+alias backtrace-libs : backtrace backtracexx dl-lib : <link>static ;
+
+alias stlport-lib ;
+alias stlport-lib : stlport : <link>static <stdlib>stlport ;
+
+lib ubermock : symbolloader.cpp backtrace-libs stlport-lib ;
+
+package.install ubermock-install
+    : <install-header-subdir>ubermock
+    :
+    : ubermock
+    : mockhandler.hpp registrar.hpp symbolloader.hpp traits.hpp ubermock.hpp
+    ;
+

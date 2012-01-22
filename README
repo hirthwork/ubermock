@@ -115,6 +115,7 @@ int main()
 The main idea of UberMock is to provide own implementation of mocked fuction
 that will behave like mocked function except special circumstances defined by
 testing environment:
+
 mock declaration ≡
 time_t time(time_t* t) throw ()
 {

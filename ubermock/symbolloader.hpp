@@ -34,6 +34,9 @@ namespace NUberMock
 
         TSymbolLoader& operator = (const TSymbolLoader&);
 
+        // hack used to get rid of strict-aliasing warning
+        void ConvertFunctionPointer(void** dest) const;
+
     public:
         TSymbolLoader();
         TSymbolLoader(const TSymbolLoader& loader);
@@ -45,8 +48,7 @@ namespace NUberMock
         inline operator TFunc() const
         {
             TFunc function = 0;
-            void** p = reinterpret_cast<void**>(&function);
-            *p = FunctionPointer_;
+            ConvertFunctionPointer(reinterpret_cast<void**>(&function));
             return function;
         }
     };

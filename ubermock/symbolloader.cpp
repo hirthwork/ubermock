@@ -46,3 +46,8 @@ const NBacktrace::TBacktrace& NUberMock::TSymbolLoader::GetBacktrace() const
     return *Backtrace_;
 }
 
+void NUberMock::TSymbolLoader::ConvertFunctionPointer(void** dest) const
+{
+    dest[0] = FunctionPointer_;
+}
+

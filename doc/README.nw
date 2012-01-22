@@ -160,8 +160,14 @@ std::cout << time(NULL) << std::endl;
 std::cout << time((&t)) << std::endl;
 std::cout << time((time_t*)2) << std::endl;
 
-@ As you can see, calls to [[time]] which doesn't match predicates aren't
-affected:
+@ Now, compile and link resulting program using the following command:
+\begin{verbatim}
+g++ mock-time.cpp -lubermock
+\end{verbatim}
+
+Run the resulting binary. As you can see, calls to [[time]] which doesn't match
+predicates aren't affected, but other two calls to [[time]] was mocked, and our
+custom values have been returned:
 \begin{verbatim}
 1327258800
 1327260035

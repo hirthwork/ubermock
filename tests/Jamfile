@@ -13,7 +13,7 @@ unit-test mock-time
 
 alias basic-test
     : test-base
-      mock-time
+      mock-time/<variant>debug
     ;
 
 alias compilers-test : basic-test/$(FULL_COMPILERS_TEST:E=) ;

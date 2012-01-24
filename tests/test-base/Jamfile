@@ -20,18 +20,20 @@ compile double-inclusion-ubermock.cpp ;
 
 lib mockapi : mockapi.cpp : <link>shared ;
 
+lib mocks : mocks.cpp : <link>static ;
+
 unit-test test-nullary
-    : mocks.cpp test-nullary.cpp mockapi /ubermock//ubermock ;
+    : test-nullary.cpp mockapi mocks /ubermock//ubermock ;
 
 unit-test test-unary
-    : mocks.cpp test-unary.cpp mockapi /ubermock//ubermock ;
+    : test-unary.cpp mockapi mocks /ubermock//ubermock ;
 
 unit-test test-binary
-    : mocks.cpp test-binary.cpp mockapi /ubermock//ubermock ;
+    : test-binary.cpp mockapi mocks /ubermock//ubermock ;
 
 unit-test test-ternary
-    : mocks.cpp test-ternary.cpp mockapi /ubermock//ubermock ;
+    : test-ternary.cpp mockapi mocks /ubermock//ubermock ;
 
 unit-test test-quaternary
-    : mocks.cpp test-quaternary.cpp mockapi /ubermock//ubermock ;
+    : test-quaternary.cpp mockapi mocks /ubermock//ubermock ;
 

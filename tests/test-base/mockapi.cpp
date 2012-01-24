@@ -44,6 +44,31 @@ int Quaternary(int, int, int, int)
     return 4;
 }
 
+void NullaryVoid()
+{
+    TGlobalState::Get() = 5;
+}
+
+void UnaryVoid(int& a)
+{
+    a = 5;
+}
+
+void BinaryVoid(int& a, int& b)
+{
+    a = b = 5;
+}
+
+void TernaryVoid(int& a, int& b, int& c)
+{
+    a = b = c = 5;
+}
+
+void QuaternaryVoid(int& a, int& b, int& c, int& d)
+{
+    a = b = c = d = 5;
+}
+
 TMockApi::TMockApi(int state)
     : State_(state)
 {

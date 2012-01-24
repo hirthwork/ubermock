@@ -46,6 +46,31 @@ int Quaternary(int a, int b, int c, int d)
     return NUberMock::HandleMock(Quaternary, a, b, c, d);
 }
 
+void NullaryVoid()
+{
+    NUberMock::HandleMock(NullaryVoid);
+}
+
+void UnaryVoid(int& a)
+{
+    NUberMock::HandleMock(UnaryVoid, a);
+}
+
+void BinaryVoid(int& a, int& b)
+{
+    NUberMock::HandleMock(BinaryVoid, a, b);
+}
+
+void TernaryVoid(int& a, int& b, int& c)
+{
+    NUberMock::HandleMock(TernaryVoid, a, b, c);
+}
+
+void QuaternaryVoid(int& a, int& b, int& c, int& d)
+{
+    NUberMock::HandleMock(QuaternaryVoid, a, b, c, d);
+}
+
 int TMockApi::Nullary()
 {
     return NUberMock::HandleMock(&TMockApi::Nullary, this);

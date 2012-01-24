@@ -26,6 +26,21 @@ extern int Binary(int, int);
 extern int Ternary(int, int, int);
 extern int Quaternary(int, int, int, int);
 
+struct TGlobalState
+{
+    static int& Get()
+    {
+        static int i;
+        return i;
+    }
+};
+
+extern void NullaryVoid();
+extern void UnaryVoid(int& a);
+extern void BinaryVoid(int& a, int& b);
+extern void TernaryVoid(int& a, int& b, int& c);
+extern void QuaternaryVoid(int& a, int& b, int& c, int& d);
+
 struct TMockApi
 {
     int State_;

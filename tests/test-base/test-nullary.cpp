@@ -29,16 +29,10 @@ BOOST_AUTO_TEST_CASE(nullary_original_values)
     BOOST_REQUIRE_EQUAL(Nullary(), 0);
     BOOST_REQUIRE_EQUAL(TMockApi().Nullary(), 10);
     BOOST_REQUIRE_EQUAL(TMockApi().NullaryConst(), 20);
+    TGlobalState::Get() = 0;
+    NullaryVoid();
+    BOOST_REQUIRE_EQUAL(TGlobalState::Get(), 5);
 }
-
-struct TGlobalState
-{
-    static int& Get()
-    {
-        static int i;
-        return i;
-    }
-};
 
 BOOST_AUTO_TEST_CASE(nullary_global)
 {
@@ -63,6 +57,8 @@ BOOST_AUTO_TEST_CASE(nullary_global)
     BOOST_REQUIRE_EQUAL(Nullary(), 0);
     TGlobalState::Get() = 5;
     BOOST_REQUIRE_EQUAL(Nullary(), 7);
+    registrar.Release();
+    BOOST_REQUIRE_EQUAL(Nullary(), 0);
 }
 
 BOOST_AUTO_TEST_CASE(nullary_global_simple)

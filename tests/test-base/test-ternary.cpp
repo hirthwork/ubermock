@@ -91,8 +91,8 @@ BOOST_AUTO_TEST_CASE(ternary_member_simple)
         }
     };
 
-    NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Ternary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(17));
+    NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Ternary,
+        TCheck::Check, NUberMock::MakeRepeatedResult(17));
     BOOST_REQUIRE_EQUAL(TMockApi().Ternary(3, 3, 3), 13);
     BOOST_REQUIRE_EQUAL(TMockApi().Ternary(2, 2, 1), 17);
 }
@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(ternary_const_member)
 {
     struct TCheck
     {
-        static bool Check(const NBacktrace::TBacktrace&, const TMockApi*, int a,
-            int b, int c)
+        static bool Check(const NBacktrace::TBacktrace&, const TMockApi*,
+            int a, int b, int c)
         {
             return a + b + c == 5;
         }

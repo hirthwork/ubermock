@@ -212,7 +212,8 @@ namespace NUberMock
         return TCaller::Call(TFunc(loader), arg1, arg2);
     }
 
-    template <class TCaller, class TFunc, class TArg1, class TArg2, class TArg3>
+    template <class TCaller, class TFunc, class TArg1, class TArg2,
+        class TArg3>
     static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3,
         const TSymbolLoader& loader)
@@ -223,7 +224,8 @@ namespace NUberMock
             end = mocks.end(); iter != end; ++iter)
         {
             if (iter->Func_ == func
-                && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2, arg3))
+                && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2,
+                    arg3))
             {
                 return iter->Check_->GetResult(arg1, arg2, arg3);
             }
@@ -231,8 +233,8 @@ namespace NUberMock
         return TCaller::Call(TFunc(loader), arg1, arg2, arg3);
     }
 
-    template <class TCaller, class TFunc, class TArg1, class TArg2, class TArg3,
-        class TArg4>
+    template <class TCaller, class TFunc, class TArg1, class TArg2,
+        class TArg3, class TArg4>
     static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4,
         const TSymbolLoader& loader)
@@ -299,15 +301,16 @@ namespace NUberMock
         }
     };
 
-    template <class TResult, class TArg1, class TArg2, class TArg3, class TArg4>
+    template <class TResult, class TArg1, class TArg2, class TArg3,
+        class TArg4>
     struct TMockHandler<TResult (*)(TArg1, TArg2, TArg3, TArg4)>
     {
         template <class TFunc>
         static inline TResult Handle(TFunc func, TArg1 arg1, TArg2 arg2,
             TArg3 arg3, TArg4 arg4, const TSymbolLoader& loader)
         {
-            return CheckAndHandle<TFunctionCaller>(func, arg1, arg2, arg3, arg4,
-                loader);
+            return CheckAndHandle<TFunctionCaller>(func, arg1, arg2, arg3,
+                arg4, loader);
         }
     };
 

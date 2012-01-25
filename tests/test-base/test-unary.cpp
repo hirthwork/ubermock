@@ -100,7 +100,8 @@ BOOST_AUTO_TEST_CASE(unary_const_member)
 {
     struct TCheck
     {
-        static bool Check(const NBacktrace::TBacktrace&, const TMockApi*, int a)
+        static bool Check(const NBacktrace::TBacktrace&, const TMockApi*,
+            int a)
         {
             return a == 5;
         }

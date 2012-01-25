@@ -80,7 +80,8 @@ namespace NUberMock
         static const unsigned Arity_ = 3;
     };
 
-    template <class TResult, class TArg1, class TArg2, class TArg3, class TArg4>
+    template <class TResult, class TArg1, class TArg2, class TArg3,
+        class TArg4>
     struct IMockBase: TResultBase<TResult>
     {
         typedef TArg1 TArg1_;
@@ -117,7 +118,8 @@ namespace NUberMock
     {
     };
 
-    template <class TResult, class TArg1, class TArg2, class TArg3, class TArg4>
+    template <class TResult, class TArg1, class TArg2, class TArg3,
+        class TArg4>
     struct IMock<TResult (*)(TArg1, TArg2, TArg3, TArg4)>:
         IMockBase<TResult, TArg1, TArg2, TArg3, TArg4>
     {
@@ -147,7 +149,8 @@ namespace NUberMock
     };
 
     template <class TResult, class TClass>
-    struct IMock<TResult (TClass::*)() const>: IMockBase<TResult, const TClass*>
+    struct IMock<TResult (TClass::*)() const>:
+        IMockBase<TResult, const TClass*>
     {
     };
 

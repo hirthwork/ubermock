@@ -29,8 +29,8 @@ Most existing C++ mocking frameworks has two restrictions:
 2. No mocking available for standard library functions like fopen or scanf.
 
 UberMock doesn’t have such restrictions. You can easily emulate stdin/stdout,
-virtual files with configs for program being tested, or even network failures at
-any execution point, to test how your program handles such failures.
+virtual files with configs for program being tested, or even network failures
+at any execution point, to test how your program handles such failures.
 
 
 3 Installation
@@ -93,8 +93,8 @@ installed in order to execute tests.
 
 4 Quick Example
 
-Let’s write the quick example that will mock time function. First of all we need
-to include ubermock/registrar.hpp header file, as it provides core mocking
+Let’s write the quick example that will mock time function. First of all we
+need to include ubermock/registrar.hpp header file, as it provides core mocking
 functionality and ubermock/ubermock.hpp header file, which contains mocking
 helpers definition. As we’re going to mock time function, we need to include
 ctime header where this function is declared. iostream will be used for values
@@ -126,9 +126,9 @@ Here, we calls UberMock helper function that will resolve mocked function, pass
 parameter to it and return value from the mocked function. This behaviour
 can be changed by return value registering. Once value is registered using
 TMockRegistrar or TSimpleMockRegistrar functions it will be returned by the
-mocked function if parameters passed to function meets user-specified predicate.
-Let’s append two predicates to the mock declaration. One will match 0x1
-pointer passed to time function, and another one will match 0x2:
+mocked function if parameters passed to function meets user-specified
+predicate.  Let’s append two predicates to the mock declaration. One will match
+0x1 pointer passed to time function, and another one will match 0x2:
 
 mock declaration +≡
 bool Check1(time_t* t)

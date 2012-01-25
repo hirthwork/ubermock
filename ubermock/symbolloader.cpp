@@ -25,7 +25,8 @@
 #include "symbolloader.hpp"
 
 NUberMock::TSymbolLoader::TSymbolLoader()
-    : FunctionPointer_(dlsym(RTLD_NEXT, NBacktrace::GetCurrentFrame(1).Symbol_))
+    : FunctionPointer_(
+        dlsym(RTLD_NEXT, NBacktrace::GetCurrentFrame(1).Symbol_))
     , Backtrace_(new NBacktrace::TBacktrace(NBacktrace::GetBacktrace(2)))
 {
 }

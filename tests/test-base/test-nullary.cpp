@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE(nullary_member_simple)
         }
     };
 
-    NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Nullary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(17));
+    NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Nullary,
+        TCheck::Check, NUberMock::MakeRepeatedResult(17));
     BOOST_REQUIRE_EQUAL(TMockApi().Nullary(), 10);
     BOOST_REQUIRE_EQUAL(TMockApi(8).Nullary(), 17);
 }

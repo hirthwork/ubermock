@@ -25,7 +25,11 @@
 
 namespace NUberMock
 {
-    struct TCleanerBase {
+    class TCleanerBase {
+        TCleanerBase(const TCleanerBase&);
+        TCleanerBase& operator = (const TCleanerBase&);
+
+    public:
         const unsigned Id_;
 
         inline TCleanerBase(unsigned id)
@@ -135,12 +139,15 @@ namespace NUberMock
         }
     };
 
-    template <class TBase, class TCheck, bool UseBacktrace>
+    template <class TBase, class TCheck, bool UseBacktrace, class TResult>
     struct TCheckNullaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckNullaryFunction(TCheck check)
+        TResult Result_;
+
+        inline TCheckNullaryFunction(TCheck check, TResult result)
             : Check_(check)
+            , Result_(result)
         {
         }
 
@@ -148,14 +155,22 @@ namespace NUberMock
         {
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_);
         }
+
+        virtual typename TBase::TResult_ GetResult()
+        {
+            return Result_();
+        }
     };
 
-    template <class TBase, class TCheck, bool UseBacktrace>
+    template <class TBase, class TCheck, bool UseBacktrace, class TResult>
     struct TCheckUnaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckUnaryFunction(TCheck check)
+        TResult Result_;
+
+        inline TCheckUnaryFunction(TCheck check, TResult result)
             : Check_(check)
+            , Result_(result)
         {
         }
 
@@ -164,14 +179,22 @@ namespace NUberMock
         {
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg);
         }
+
+        virtual typename TBase::TResult_ GetResult(typename TBase::TArg_ arg)
+        {
+            return Result_(arg);
+        }
     };
 
-    template <class TBase, class TCheck, bool UseBacktrace>
+    template <class TBase, class TCheck, bool UseBacktrace, class TResult>
     struct TCheckBinaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckBinaryFunction(TCheck check)
+        TResult Result_;
+
+        inline TCheckBinaryFunction(TCheck check, TResult result)
             : Check_(check)
+            , Result_(result)
         {
         }
 
@@ -181,14 +204,23 @@ namespace NUberMock
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg1,
                 arg2);
         }
+
+        virtual typename TBase::TResult_ GetResult(typename TBase::TArg1_ arg1,
+            typename TBase::TArg2_ arg2)
+        {
+            return Result_(arg1, arg2);
+        }
     };
 
-    template <class TBase, class TCheck, bool UseBacktrace>
+    template <class TBase, class TCheck, bool UseBacktrace, class TResult>
     struct TCheckTernaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckTernaryFunction(TCheck check)
+        TResult Result_;
+
+        inline TCheckTernaryFunction(TCheck check, TResult result)
             : Check_(check)
+            , Result_(result)
         {
         }
 
@@ -199,15 +231,24 @@ namespace NUberMock
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg1,
                 arg2, arg3);
         }
+
+        virtual typename TBase::TResult_ GetResult(typename TBase::TArg1_ arg1,
+            typename TBase::TArg2_ arg2, typename TBase::TArg3_ arg3)
+        {
+            return Result_(arg1, arg2, arg3);
+        }
     };
 
 
-    template <class TBase, class TCheck, bool UseBacktrace>
+    template <class TBase, class TCheck, bool UseBacktrace, class TResult>
     struct TCheckQuaternaryFunction: TBase
     {
         const TCheck Check_;
-        inline TCheckQuaternaryFunction(TCheck check)
+        TResult Result_;
+
+        inline TCheckQuaternaryFunction(TCheck check, TResult result)
             : Check_(check)
+            , Result_(result)
         {
         }
 
@@ -218,6 +259,13 @@ namespace NUberMock
             return TCheckCaller<UseBacktrace>::Call(backtrace, Check_, arg1,
                 arg2, arg3, arg4);
         }
+
+        virtual typename TBase::TResult_ GetResult(typename TBase::TArg1_ arg1,
+            typename TBase::TArg2_ arg2, typename TBase::TArg3_ arg3,
+            typename TBase::TArg4_ arg4)
+        {
+            return Result_(arg1, arg2, arg3, arg4);
+        }
     };
 
     template <unsigned Arity, class TFunc, bool UseBacktrace>
@@ -226,68 +274,69 @@ namespace NUberMock
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<0, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
-        template <class TCheck>
-        static TBase_* CreateCheck(TCheck check)
+        typedef IMock<TFunc> TBase_;
+        template <class TCheck, class TResult>
+        static TBase_* CreateCheck(TCheck check, TResult result)
         {
-            return new TCheckNullaryFunction<TBase_, TCheck, UseBacktrace>(
-                check);
+            return new TCheckNullaryFunction<TBase_, TCheck, UseBacktrace,
+                TResult>(check, result);
         }
     };
 
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<1, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
-        template <class TCheck>
-        static TBase_* CreateCheck(TCheck check)
+        typedef IMock<TFunc> TBase_;
+        template <class TCheck, class TResult>
+        static TBase_* CreateCheck(TCheck check, TResult result)
         {
-            return new TCheckUnaryFunction<TBase_, TCheck, UseBacktrace>(
-                check);
+            return new TCheckUnaryFunction<TBase_, TCheck, UseBacktrace,
+                TResult>(check, result);
         }
     };
 
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<2, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
-        template <class TCheck>
-        static TBase_* CreateCheck(TCheck check)
+        typedef IMock<TFunc> TBase_;
+        template <class TCheck, class TResult>
+        static TBase_* CreateCheck(TCheck check, TResult result)
         {
-            return new TCheckBinaryFunction<TBase_, TCheck, UseBacktrace>(
-                check);
+            return new TCheckBinaryFunction<TBase_, TCheck, UseBacktrace,
+                TResult>(check, result);
         }
     };
 
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<3, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
-        template <class TCheck>
-        static TBase_* CreateCheck(TCheck check)
+        typedef IMock<TFunc> TBase_;
+        template <class TCheck, class TResult>
+        static TBase_* CreateCheck(TCheck check, TResult result)
         {
-            return new TCheckTernaryFunction<TBase_, TCheck, UseBacktrace>(
-                check);
+            return new TCheckTernaryFunction<TBase_, TCheck, UseBacktrace,
+                TResult>(check, result);
         }
     };
 
     template <class TFunc, bool UseBacktrace>
     struct TCheckFactory<4, TFunc, UseBacktrace>
     {
-        typedef typename TFunctionTraits<TFunc>::TCheck_ TBase_;
-        template <class TCheck>
-        static TBase_* CreateCheck(TCheck check)
+        typedef IMock<TFunc> TBase_;
+        template <class TCheck, class TResult>
+        static TBase_* CreateCheck(TCheck check, TResult result)
         {
-            return new TCheckQuaternaryFunction<TBase_, TCheck, UseBacktrace>(
-                check);
+            return new TCheckQuaternaryFunction<TBase_, TCheck, UseBacktrace,
+                TResult>(check, result);
         }
     };
 
-    template <class TFunc, bool UseBacktrace, class TCheck>
-    typename TFunctionTraits<TFunc>::TCheck_* CreateCheck(TCheck check)
+    template <class TFunc, bool UseBacktrace, class TCheck, class TResult>
+    IMock<TFunc>* CreateCheck(TCheck check,
+        TResult result)
     {
-        return TCheckFactory<TFunctionTraits<TFunc>::Arity_, TFunc,
-            UseBacktrace>::CreateCheck(check);
+        return TCheckFactory<IMock<TFunc>::Arity_, TFunc,
+            UseBacktrace>::CreateCheck(check, result);
     }
 
     class TRegistrarBase
@@ -324,22 +373,20 @@ namespace NUberMock
 
     struct TMockRegistrar: TRegistrarBase
     {
-        template <class TFunc, class TCheck>
-        inline TMockRegistrar(TFunc func, TCheck check,
-            typename TFunctionTraits<TFunc>::TResult_ result)
+        template <class TFunc, class TCheck, class TResult>
+        inline TMockRegistrar(TFunc func, TCheck check, TResult result)
             : TRegistrarBase(new TCleaner<TFunc>(TMockStorage<TFunc>::AddMock(
-                func, CreateCheck<TFunc, true>(check), result)))
+                func, CreateCheck<TFunc, true>(check, result))))
         {
         }
     };
 
     struct TSimpleMockRegistrar: TRegistrarBase
     {
-        template <class TFunc, class TCheck>
-        inline TSimpleMockRegistrar(TFunc func, TCheck check,
-            typename TFunctionTraits<TFunc>::TResult_ result)
+        template <class TFunc, class TCheck, class TResult>
+        inline TSimpleMockRegistrar(TFunc func, TCheck check, TResult result)
             : TRegistrarBase(new TCleaner<TFunc>(TMockStorage<TFunc>::AddMock(
-                func, CreateCheck<TFunc, false>(check), result)))
+                func, CreateCheck<TFunc, false>(check, result))))
         {
         }
     };

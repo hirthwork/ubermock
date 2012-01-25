@@ -18,6 +18,7 @@
  */
 
 #include <ubermock/registrar.hpp>
+#include <ubermock/ubermock.hpp>
 
 #include "mockapi.hpp"
 
@@ -41,7 +42,8 @@ BOOST_AUTO_TEST_CASE(unary_global)
         }
     };
 
-    NUberMock::TMockRegistrar registrar(Unary, TCheck::Check, 6);
+    NUberMock::TMockRegistrar registrar(Unary, TCheck::Check,
+        NUberMock::MakeRepeatedResult(6));
     BOOST_REQUIRE_EQUAL(Unary(1), 1);
     BOOST_REQUIRE_EQUAL(Unary(5), 6);
 }
@@ -56,7 +58,8 @@ BOOST_AUTO_TEST_CASE(unary_global_simple)
         }
     };
 
-    NUberMock::TSimpleMockRegistrar registrar(Unary, TCheck::Check, 8);
+    NUberMock::TSimpleMockRegistrar registrar(Unary, TCheck::Check,
+        NUberMock::MakeRepeatedResult(8));
     BOOST_REQUIRE_EQUAL(Unary(2), 1);
     BOOST_REQUIRE_EQUAL(Unary(5), 8);
 }
@@ -71,7 +74,8 @@ BOOST_AUTO_TEST_CASE(unary_member)
         }
     };
 
-    NUberMock::TMockRegistrar registrar(&TMockApi::Unary, TCheck::Check, 16);
+    NUberMock::TMockRegistrar registrar(&TMockApi::Unary, TCheck::Check,
+        NUberMock::MakeRepeatedResult(16));
     BOOST_REQUIRE_EQUAL(TMockApi().Unary(3), 11);
     BOOST_REQUIRE_EQUAL(TMockApi().Unary(5), 16);
 }
@@ -87,7 +91,7 @@ BOOST_AUTO_TEST_CASE(unary_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Unary, TCheck::Check,
-        17);
+        NUberMock::MakeRepeatedResult(17));
     BOOST_REQUIRE_EQUAL(TMockApi().Unary(4), 11);
     BOOST_REQUIRE_EQUAL(TMockApi().Unary(5), 17);
 }
@@ -103,7 +107,7 @@ BOOST_AUTO_TEST_CASE(unary_const_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::UnaryConst, TCheck::Check,
-        26);
+        NUberMock::MakeRepeatedResult(26));
     BOOST_REQUIRE_EQUAL(TMockApi().UnaryConst(6), 21);
     BOOST_REQUIRE_EQUAL(TMockApi().UnaryConst(5), 26);
 }
@@ -119,7 +123,7 @@ BOOST_AUTO_TEST_CASE(unary_const_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::UnaryConst,
-        TCheck::Check, 27);
+        TCheck::Check, NUberMock::MakeRepeatedResult(27));
     BOOST_REQUIRE_EQUAL(TMockApi().UnaryConst(7), 21);
     BOOST_REQUIRE_EQUAL(TMockApi().UnaryConst(5), 27);
 }

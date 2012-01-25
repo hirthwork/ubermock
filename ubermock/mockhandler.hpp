@@ -30,14 +30,10 @@ namespace NUberMock
     template <class TFunc>
     class TMockStorage
     {
-        typedef TFunc TFunc_;
-        typedef typename TFunctionTraits<TFunc_>::TCheck_ TCheck_;
-        typedef typename TFunctionTraits<TFunc_>::TResult_ TResult_;
         struct TMock_ {
             const unsigned Id_;
-            const TFunc_ Func_;
-            const TCheck_* Check_;
-            const TResult_ Result_;
+            const TFunc Func_;
+            IMock<TFunc>* const Check_;
         };
 
     public:
@@ -71,14 +67,14 @@ namespace NUberMock
     public:
         static inline TMocks_& GetMocks()
         {
-            static TMockStorage mockHandlerBase;
-            return mockHandlerBase.Mocks_;
+            static TMockStorage mockStorage;
+            return mockStorage.Mocks_;
         }
 
-        static inline unsigned AddMock(TFunc_ func, const TCheck_* check,
-            TResult_ result)
+        static inline unsigned AddMock(TFunc func,
+            IMock<TFunc>* check)
         {
-            TMock_ mock = {GetId(), func, check, result};
+            TMock_ mock = {GetId(), func, check};
             GetMocks().push_front(mock);
             return mock.Id_;
         }
@@ -101,21 +97,21 @@ namespace NUberMock
     struct TFunctionCaller
     {
         template <class TFunc, class TArg>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TArg arg)
         {
             return func(arg);
         }
 
         template <class TFunc, class TArg1, class TArg2>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TArg1 arg1, TArg2 arg2)
         {
             return func(arg1, arg2);
         }
 
         template <class TFunc, class TArg1, class TArg2, class TArg3>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
             return func(arg1, arg2, arg3);
@@ -123,7 +119,7 @@ namespace NUberMock
 
         template <class TFunc, class TArg1, class TArg2, class TArg3,
             class TArg4>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4)
         {
             return func(arg1, arg2, arg3, arg4);
@@ -133,21 +129,21 @@ namespace NUberMock
     struct TMemberFunctionCaller
     {
         template <class TFunc, class TClass>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TClass* pthis)
         {
             return (pthis->*func)();
         }
 
         template <class TFunc, class TClass, class TArg>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TClass* pthis, TArg arg)
         {
             return (pthis->*func)(arg);
         }
 
         template <class TFunc, class TClass, class TArg1, class TArg2>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TClass* pthis, TArg1 arg1, TArg2 arg2)
         {
             return (pthis->*func)(arg1, arg2);
@@ -155,7 +151,7 @@ namespace NUberMock
 
         template <class TFunc, class TClass, class TArg1, class TArg2,
             class TArg3>
-        static inline typename TFunctionTraits<TFunc>::TResult_ Call(TFunc func,
+        static inline typename IMock<TFunc>::TResult_ Call(TFunc func,
             TClass* pthis, TArg1 arg1, TArg2 arg2, TArg3 arg3)
         {
             return (pthis->*func)(arg1, arg2, arg3);
@@ -163,7 +159,7 @@ namespace NUberMock
     };
 
     template <class TFunc>
-    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+    static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, const TSymbolLoader& loader)
     {
         typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
@@ -174,14 +170,14 @@ namespace NUberMock
             if (iter->Func_ == func
                 && iter->Check_->Check(loader.GetBacktrace()))
             {
-                return iter->Result_;
+                return iter->Check_->GetResult();
             }
         }
         return TFunc(loader)();
     }
 
     template <class TCaller, class TFunc, class TArg>
-    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+    static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, TArg arg, const TSymbolLoader& loader)
     {
         typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
@@ -192,14 +188,14 @@ namespace NUberMock
             if (iter->Func_ == func
                 && iter->Check_->Check(loader.GetBacktrace(), arg))
             {
-                return iter->Result_;
+                return iter->Check_->GetResult(arg);
             }
         }
         return TCaller::Call(TFunc(loader), arg);
     }
 
     template <class TCaller, class TFunc, class TArg1, class TArg2>
-    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+    static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, TArg1 arg1, TArg2 arg2, const TSymbolLoader& loader)
     {
         typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
@@ -210,14 +206,14 @@ namespace NUberMock
             if (iter->Func_ == func
                 && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2))
             {
-                return iter->Result_;
+                return iter->Check_->GetResult(arg1, arg2);
             }
         }
         return TCaller::Call(TFunc(loader), arg1, arg2);
     }
 
     template <class TCaller, class TFunc, class TArg1, class TArg2, class TArg3>
-    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+    static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3,
         const TSymbolLoader& loader)
     {
@@ -229,7 +225,7 @@ namespace NUberMock
             if (iter->Func_ == func
                 && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2, arg3))
             {
-                return iter->Result_;
+                return iter->Check_->GetResult(arg1, arg2, arg3);
             }
         }
         return TCaller::Call(TFunc(loader), arg1, arg2, arg3);
@@ -237,7 +233,7 @@ namespace NUberMock
 
     template <class TCaller, class TFunc, class TArg1, class TArg2, class TArg3,
         class TArg4>
-    static typename TFunctionTraits<TFunc>::TResult_ CheckAndHandle(
+    static typename IMock<TFunc>::TResult_ CheckAndHandle(
         TFunc func, TArg1 arg1, TArg2 arg2, TArg3 arg3, TArg4 arg4,
         const TSymbolLoader& loader)
     {
@@ -250,7 +246,7 @@ namespace NUberMock
                 && iter->Check_->Check(loader.GetBacktrace(), arg1, arg2, arg3,
                     arg4))
             {
-                return iter->Result_;
+                return iter->Check_->GetResult(arg1, arg2, arg3, arg4);
             }
         }
         return TCaller::Call(TFunc(loader), arg1, arg2, arg3, arg4);

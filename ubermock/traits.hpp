@@ -27,259 +27,147 @@ namespace NBacktrace
 
 namespace NUberMock
 {
-    template <class TArg1, class TArg2>
-    struct ICheckBinaryFunction
-    {
-        virtual inline ~ICheckBinaryFunction()
-        {
-        }
-
-        virtual bool Check(const NBacktrace::TBacktrace&,
-            TArg1, TArg2) const = 0;
-    };
-
-    template <class TArg1, class TArg2, class TArg3>
-    struct ICheckTernaryFunction
-    {
-        virtual inline ~ICheckTernaryFunction()
-        {
-        }
-
-        virtual bool Check(const NBacktrace::TBacktrace&,
-            TArg1, TArg2, TArg3) const = 0;
-    };
-
-    template <class TArg1, class TArg2, class TArg3, class TArg4>
-    struct ICheckQuaternaryFunction
-    {
-        virtual inline ~ICheckQuaternaryFunction()
-        {
-        }
-
-        virtual bool Check(const NBacktrace::TBacktrace&,
-            TArg1, TArg2, TArg3, TArg4) const = 0;
-    };
-
-    struct TCheck {
-        virtual inline ~TCheck()
-        {
-        }
-    };
-
-    template <class TFunc>
-    struct TFunctionTraits;
-
     template <class TResult>
-    struct TFunctionTraits<TResult (*)()>
+    struct TResultBase
     {
         typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
+        virtual inline ~TResultBase()
         {
-            virtual bool Check(const NBacktrace::TBacktrace&) const = 0;
-        };
+        }
+    };
 
+    template <class TResult, class TArg1 = void, class TArg2 = void,
+        class TArg3 = void, class TArg4 = void>
+    struct IMockBase;
+
+    template <class TResult>
+    struct IMockBase<TResult, void, void, void, void>: TResultBase<TResult>
+    {
+        virtual bool Check(const NBacktrace::TBacktrace&) const = 0;
+        virtual TResult GetResult() = 0;
         static const unsigned Arity_ = 0;
     };
 
     template <class TResult, class TArg>
-    struct TFunctionTraits<TResult (*)(TArg)>
+    struct IMockBase<TResult, TArg, void, void, void>: TResultBase<TResult>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TArg TArg_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TArg_) const = 0;
-        };
-
+        typedef TArg TArg_;
+        virtual bool Check(const NBacktrace::TBacktrace&, TArg) const = 0;
+        virtual TResult GetResult(TArg) = 0;
         static const unsigned Arity_ = 1;
     };
 
     template <class TResult, class TArg1, class TArg2>
-    struct TFunctionTraits<TResult (*)(TArg1, TArg2)>
+    struct IMockBase<TResult, TArg1, TArg2, void, void>: TResultBase<TResult>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TArg1 TArg1_;
-            typedef TArg2 TArg2_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TArg1, TArg2) const = 0;
-        };
-
+        typedef TArg1 TArg1_;
+        typedef TArg2 TArg2_;
+        virtual bool Check(const NBacktrace::TBacktrace&,
+            TArg1, TArg2) const = 0;
+        virtual TResult GetResult(TArg1, TArg2) = 0;
         static const unsigned Arity_ = 2;
     };
 
     template <class TResult, class TArg1, class TArg2, class TArg3>
-    struct TFunctionTraits<TResult (*)(TArg1, TArg2, TArg3)>
+    struct IMockBase<TResult, TArg1, TArg2, TArg3, void>: TResultBase<TResult>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TArg1 TArg1_;
-            typedef TArg2 TArg2_;
-            typedef TArg3 TArg3_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TArg1, TArg2, TArg3) const = 0;
-        };
-
+        typedef TArg1 TArg1_;
+        typedef TArg2 TArg2_;
+        typedef TArg3 TArg3_;
+        virtual bool Check(const NBacktrace::TBacktrace&,
+            TArg1, TArg2, TArg3) const = 0;
+        virtual TResult GetResult(TArg1, TArg2, TArg3) = 0;
         static const unsigned Arity_ = 3;
     };
 
     template <class TResult, class TArg1, class TArg2, class TArg3, class TArg4>
-    struct TFunctionTraits<TResult (*)(TArg1, TArg2, TArg3, TArg4)>
+    struct IMockBase: TResultBase<TResult>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TArg1 TArg1_;
-            typedef TArg2 TArg2_;
-            typedef TArg3 TArg3_;
-            typedef TArg4 TArg4_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TArg1, TArg2, TArg3, TArg4) const = 0;
-        };
-
+        typedef TArg1 TArg1_;
+        typedef TArg2 TArg2_;
+        typedef TArg3 TArg3_;
+        typedef TArg4 TArg4_;
+        virtual bool Check(const NBacktrace::TBacktrace&,
+            TArg1, TArg2, TArg3, TArg4) const = 0;
+        virtual TResult GetResult(TArg1, TArg2, TArg3, TArg4) = 0;
         static const unsigned Arity_ = 4;
     };
 
-    template <class TResult, class TClass>
-    struct TFunctionTraits<TResult (TClass::*)()>
+    template <class TFunc>
+    struct IMock;
+
+    template <class TResult>
+    struct IMock<TResult (*)()>: IMockBase<TResult>
     {
-        typedef TResult TResult_;
+    };
 
-        struct TCheck_ : TCheck
-        {
-            typedef TClass* TArg_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TClass*) const = 0;
-        };
+    template <class TResult, class TArg>
+    struct IMock<TResult (*)(TArg)>: IMockBase<TResult, TArg>
+    {
+    };
 
-        static const unsigned Arity_ = 1;
+    template <class TResult, class TArg1, class TArg2>
+    struct IMock<TResult (*)(TArg1, TArg2)>: IMockBase<TResult, TArg1, TArg2>
+    {
+    };
+
+    template <class TResult, class TArg1, class TArg2, class TArg3>
+    struct IMock<TResult (*)(TArg1, TArg2, TArg3)>:
+        IMockBase<TResult, TArg1, TArg2, TArg3>
+    {
+    };
+
+    template <class TResult, class TArg1, class TArg2, class TArg3, class TArg4>
+    struct IMock<TResult (*)(TArg1, TArg2, TArg3, TArg4)>:
+        IMockBase<TResult, TArg1, TArg2, TArg3, TArg4>
+    {
+    };
+
+    template <class TResult, class TClass>
+    struct IMock<TResult (TClass::*)()>: IMockBase<TResult, TClass*>
+    {
     };
 
     template <class TResult, class TClass, class TArg>
-    struct TFunctionTraits<TResult (TClass::*)(TArg)>
+    struct IMock<TResult (TClass::*)(TArg)>: IMockBase<TResult, TClass*, TArg>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TClass* TArg1_;
-            typedef TArg TArg2_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TClass*, TArg) const = 0;
-        };
-
-        static const unsigned Arity_ = 2;
     };
 
     template <class TResult, class TClass, class TArg1, class TArg2>
-    struct TFunctionTraits<TResult (TClass::*)(TArg1, TArg2)>
+    struct IMock<TResult (TClass::*)(TArg1, TArg2)>:
+        IMockBase<TResult, TClass*, TArg1, TArg2>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TClass* TArg1_;
-            typedef TArg1 TArg2_;
-            typedef TArg2 TArg3_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TClass*, TArg1, TArg2) const = 0;
-        };
-
-        static const unsigned Arity_ = 3;
     };
 
     template <class TResult, class TClass, class TArg1, class TArg2,
         class TArg3>
-    struct TFunctionTraits<TResult (TClass::*)(TArg1, TArg2, TArg3)>
+    struct IMock<TResult (TClass::*)(TArg1, TArg2, TArg3)>:
+        IMockBase<TResult, TClass*, TArg1, TArg2, TArg3>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef TClass* TArg1_;
-            typedef TArg1 TArg2_;
-            typedef TArg2 TArg3_;
-            typedef TArg3 TArg4_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                TClass*, TArg1, TArg2, TArg3) const = 0;
-        };
-
-        static const unsigned Arity_ = 4;
     };
 
     template <class TResult, class TClass>
-    struct TFunctionTraits<TResult (TClass::*)() const>
+    struct IMock<TResult (TClass::*)() const>: IMockBase<TResult, const TClass*>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef const TClass* TArg_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                const TClass*) const = 0;
-        };
-
-        static const unsigned Arity_ = 1;
     };
 
     template <class TResult, class TClass, class TArg>
-    struct TFunctionTraits<TResult (TClass::*)(TArg) const>
+    struct IMock<TResult (TClass::*)(TArg) const>:
+        IMockBase<TResult, const TClass*, TArg>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef const TClass* TArg1_;
-            typedef TArg TArg2_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                const TClass*, TArg) const = 0;
-        };
-
-        static const unsigned Arity_ = 2;
     };
 
     template <class TResult, class TClass, class TArg1, class TArg2>
-    struct TFunctionTraits<TResult (TClass::*)(TArg1, TArg2) const>
+    struct IMock<TResult (TClass::*)(TArg1, TArg2) const>:
+        IMockBase<TResult, const TClass*, TArg1, TArg2>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef const TClass* TArg1_;
-            typedef TArg1 TArg2_;
-            typedef TArg2 TArg3_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                const TClass*, TArg1, TArg2) const = 0;
-        };
-
-        static const unsigned Arity_ = 3;
     };
 
     template <class TResult, class TClass, class TArg1, class TArg2,
         class TArg3>
-    struct TFunctionTraits<TResult (TClass::*)(TArg1, TArg2, TArg3) const>
+    struct IMock<TResult (TClass::*)(TArg1, TArg2, TArg3) const>:
+        IMockBase<TResult, const TClass*, TArg1, TArg2, TArg3>
     {
-        typedef TResult TResult_;
-
-        struct TCheck_ : TCheck
-        {
-            typedef const TClass* TArg1_;
-            typedef TArg1 TArg2_;
-            typedef TArg2 TArg3_;
-            typedef TArg3 TArg4_;
-            virtual bool Check(const NBacktrace::TBacktrace&,
-                const TClass*, TArg1, TArg2, TArg3) const = 0;
-        };
-
-        static const unsigned Arity_ = 4;
     };
 }
 

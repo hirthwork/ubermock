@@ -98,7 +98,7 @@ namespace NUberMock
         TArg Arg_;
         static const unsigned Arity_ = 1;
 
-        inline TTuple(TArg arg)
+        inline explicit TTuple(TArg arg)
             : Arg_(arg)
         {
         }

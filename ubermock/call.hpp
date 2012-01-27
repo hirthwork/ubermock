@@ -15,7 +15,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         IsMember && TArgs::Arity_ == 1>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return (args.Arg_->*func)();
     }
@@ -23,7 +23,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         IsMember && TArgs::Arity_ == 2>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return (args.Arg1_->*func)(args.Arg2_);
     }
@@ -31,7 +31,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         IsMember && TArgs::Arity_ == 3>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return (args.Arg1_->*func)(args.Arg2_, args.Arg3_);
     }
@@ -39,7 +39,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         IsMember && TArgs::Arity_ == 4>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return (args.Arg1_->*func)(args.Arg2_, args.Arg3_, args.Arg4_);
     }
@@ -47,7 +47,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         !IsMember && TArgs::Arity_ == 0>::TType_
-        Call(TFunc func, TArgs)
+        Call(TFunc func, const TArgs&)
     {
         return func();
     }
@@ -55,7 +55,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         !IsMember && TArgs::Arity_ == 1>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return func(args.Arg_);
     }
@@ -63,7 +63,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         !IsMember && TArgs::Arity_ == 2>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_);
     }
@@ -71,7 +71,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         !IsMember && TArgs::Arity_ == 3>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_, args.Arg3_);
     }
@@ -79,7 +79,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         !IsMember && TArgs::Arity_ == 4>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_, args.Arg3_, args.Arg4_);
     }
@@ -87,7 +87,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename TEnableIf<TResult,
         !IsMember && TArgs::Arity_ == 5>::TType_
-        Call(TFunc func, TArgs args)
+        Call(TFunc func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_, args.Arg3_, args.Arg4_,
             args.Arg5_);

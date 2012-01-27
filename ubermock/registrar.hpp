@@ -73,7 +73,7 @@ namespace NUberMock
         {
         }
 
-        virtual TResult_ GetResult(TArgs_ args)
+        virtual TResult_ GetResult(const TArgs_& args)
         {
             return Call<TResult_, false>(ResultGenerator_, args);
         }
@@ -90,7 +90,7 @@ namespace NUberMock
         }
 
         virtual bool Check(const NBacktrace::TBacktrace& backtrace,
-            typename TBase::TArgs_ args) const
+            const typename TBase::TArgs_& args) const
         {
             return Call<bool, false>(this->Check_, args.template Prepend
                 <const NBacktrace::TBacktrace&>(backtrace));
@@ -108,7 +108,7 @@ namespace NUberMock
         }
 
         virtual bool Check(const NBacktrace::TBacktrace&,
-            typename TBase::TArgs_ args) const
+            const typename TBase::TArgs_& args) const
         {
             return Call<bool, false>(this->Check_, args);
         }

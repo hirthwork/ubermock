@@ -39,8 +39,9 @@ namespace NUberMock
         virtual inline ~IMockBase()
         {
         }
-        virtual bool Check(const NBacktrace::TBacktrace&, TArgs_) const = 0;
-        virtual TResult GetResult(TArgs_) = 0;
+        virtual bool Check(const NBacktrace::TBacktrace&,
+            const TArgs_&) const = 0;
+        virtual TResult GetResult(const TArgs_&) = 0;
     };
 
     template <class TFunc>

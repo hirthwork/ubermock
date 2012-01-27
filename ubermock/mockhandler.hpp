@@ -96,8 +96,8 @@ namespace NUberMock
     };
 
     template <bool IsMember, class TFunc, class TArgs>
-    static typename IMock<TFunc>::TResult_ GetValue(TFunc func, TArgs args,
-        const TSymbolLoader& loader)
+    static typename IMock<TFunc>::TResult_ GetValue(TFunc func,
+        const TArgs& args, const TSymbolLoader& loader)
     {
         typedef typename TMockStorage<TFunc>::TMocks_ TMocks_;
         const TMocks_& mocks = TMockStorage<TFunc>::GetMocks();

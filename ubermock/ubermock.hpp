@@ -64,53 +64,6 @@ namespace NUberMock
         return TMockHandler<TFunc>::Handle(func, arg1, arg2, arg3, arg4,
             loader);
     }
-
-    template <class TResult>
-    class TRepeatedResult
-    {
-        const TResult Result_;
-
-    public:
-        inline TRepeatedResult(const TResult& result)
-            : Result_(result)
-        {
-        }
-
-        const TResult& operator () () const
-        {
-            return Result_;
-        }
-
-        template <class TArg>
-        const TResult& operator () (TArg) const
-        {
-            return Result_;
-        }
-
-        template <class TArg1, class TArg2>
-        const TResult& operator () (TArg1, TArg2) const
-        {
-            return Result_;
-        }
-
-        template <class TArg1, class TArg2, class TArg3>
-        const TResult& operator () (TArg1, TArg2, TArg3) const
-        {
-            return Result_;
-        }
-
-        template <class TArg1, class TArg2, class TArg3, class TArg4>
-        const TResult& operator () (TArg1, TArg2, TArg3, TArg4) const
-        {
-            return Result_;
-        }
-    };
-
-    template <class TResult>
-    TRepeatedResult<TResult> MakeRepeatedResult(TResult result)
-    {
-        return TRepeatedResult<TResult>(result);
-    }
 }
 
 #endif

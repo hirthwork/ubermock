@@ -18,7 +18,7 @@
  */
 
 #include <ubermock/registrar.hpp>
-#include <ubermock/ubermock.hpp>
+#include <range/range.hpp>
 
 #include "mockapi.hpp"
 
@@ -48,14 +48,14 @@ BOOST_AUTO_TEST_CASE(nullary_global)
     {
         TGlobalState::Get() = 0;
         NUberMock::TMockRegistrar registrar(Nullary, TCheck::Check,
-            NUberMock::MakeRepeatedResult(6));
+            NRange::SingleValue(6));
         BOOST_REQUIRE_EQUAL(Nullary(), 0);
         TGlobalState::Get() = 5;
         BOOST_REQUIRE_EQUAL(Nullary(), 6);
     }
     BOOST_REQUIRE_EQUAL(Nullary(), 0);
     NUberMock::TMockRegistrar registrar(Nullary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(7));
+        NRange::SingleValue(7));
     TGlobalState::Get() = 4;
     BOOST_REQUIRE_EQUAL(Nullary(), 0);
     TGlobalState::Get() = 5;
@@ -77,14 +77,14 @@ BOOST_AUTO_TEST_CASE(nullary_global_simple)
     {
         TGlobalState::Get() = 0;
         NUberMock::TSimpleMockRegistrar registrar(Nullary, TCheck::Check,
-            NUberMock::MakeRepeatedResult(8));
+            NRange::SingleValue(8));
         BOOST_REQUIRE_EQUAL(Nullary(), 0);
         TGlobalState::Get() = 6;
         BOOST_REQUIRE_EQUAL(Nullary(), 8);
     }
     BOOST_REQUIRE_EQUAL(Nullary(), 0);
     NUberMock::TSimpleMockRegistrar registrar(Nullary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(9));
+        NRange::SingleValue(9));
     TGlobalState::Get() = 5;
     BOOST_REQUIRE_EQUAL(Nullary(), 0);
     TGlobalState::Get() = 6;
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(nullary_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::Nullary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(16));
+        NRange::SingleValue(16));
     BOOST_REQUIRE_EQUAL(TMockApi().Nullary(), 10);
     BOOST_REQUIRE_EQUAL(TMockApi(7).Nullary(), 16);
 }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(nullary_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Nullary,
-        TCheck::Check, NUberMock::MakeRepeatedResult(17));
+        TCheck::Check, NRange::SingleValue(17));
     BOOST_REQUIRE_EQUAL(TMockApi().Nullary(), 10);
     BOOST_REQUIRE_EQUAL(TMockApi(8).Nullary(), 17);
 }
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(nullary_const_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::NullaryConst, TCheck::Check,
-        NUberMock::MakeRepeatedResult(26));
+        NRange::SingleValue(26));
     BOOST_REQUIRE_EQUAL(TMockApi().NullaryConst(), 20);
     BOOST_REQUIRE_EQUAL(TMockApi(9).NullaryConst(), 26);
 }
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(nullary_const_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::NullaryConst,
-        TCheck::Check, NUberMock::MakeRepeatedResult(27));
+        TCheck::Check, NRange::SingleValue(27));
     BOOST_REQUIRE_EQUAL(TMockApi().NullaryConst(), 20);
     BOOST_REQUIRE_EQUAL(TMockApi(10).NullaryConst(), 27);
 }

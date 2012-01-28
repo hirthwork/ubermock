@@ -18,7 +18,7 @@
  */
 
 #include <ubermock/registrar.hpp>
-#include <ubermock/ubermock.hpp>
+#include <range/range.hpp>
 
 #include "mockapi.hpp"
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(quaternary_global)
     };
 
     NUberMock::TMockRegistrar registrar(Quaternary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(6));
+        NRange::SingleValue(6));
     BOOST_REQUIRE_EQUAL(Quaternary(1, 1, 1, 1), 4);
     BOOST_REQUIRE_EQUAL(Quaternary(2, 1, 1, 1), 6);
 }
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(quaternary_global_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(Quaternary, TCheck::Check,
-        NUberMock::MakeRepeatedResult(8));
+        NRange::SingleValue(8));
     BOOST_REQUIRE_EQUAL(Quaternary(0, 2, 2, 2), 4);
     BOOST_REQUIRE_EQUAL(Quaternary(3, 2, 1, -1), 8);
 }

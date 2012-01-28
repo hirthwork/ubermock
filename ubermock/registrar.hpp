@@ -59,7 +59,7 @@ namespace NUberMock
         typedef typename TBase::TArgs_ TArgs_;
         typedef typename TBase::TResult_ TResult_;
 
-        const TCheck Check_;
+        TCheck Check_;
         TResultGenerator ResultGenerator_;
 
         inline IGeneratingMock(TCheck check, TResultGenerator resultGenerator)
@@ -78,7 +78,7 @@ namespace NUberMock
     template <class TCheck, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         NRange::TIsRange<TResultGenerator>::Value_, bool>::TType_
-        CheckResultGenerator(TCheck check,
+        CheckResultGenerator(typename TAddRefIfClass<TCheck>::TType_ check,
             const TResultGenerator& resultGenerator, const TArgs& args)
     {
         return !resultGenerator.IsEmpty()
@@ -88,7 +88,7 @@ namespace NUberMock
     template <class TCheck, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !NRange::TIsRange<TResultGenerator>::Value_, bool>::TType_
-        CheckResultGenerator(TCheck check,
+        CheckResultGenerator(typename TAddRefIfClass<TCheck>::TType_ check,
             const TResultGenerator&, const TArgs& args)
     {
         return Call<bool, false, TCheck>(check, args);
@@ -105,9 +105,10 @@ namespace NUberMock
         }
 
         virtual bool Check(const NBacktrace::TBacktrace& backtrace,
-            const typename TBase::TArgs_& args) const
+            const typename TBase::TArgs_& args)
         {
-            return CheckResultGenerator(this->Check_, this->ResultGenerator_,
+            return CheckResultGenerator<TCheck>(this->Check_,
+                this->ResultGenerator_,
                 args.template Prepend<const NBacktrace::TBacktrace&>(backtrace)
             );
         }
@@ -124,10 +125,10 @@ namespace NUberMock
         }
 
         virtual bool Check(const NBacktrace::TBacktrace&,
-            const typename TBase::TArgs_& args) const
+            const typename TBase::TArgs_& args)
         {
-            return CheckResultGenerator(this->Check_, this->ResultGenerator_,
-                args);
+            return CheckResultGenerator<TCheck>(this->Check_,
+                this->ResultGenerator_, args);
         }
     };
 

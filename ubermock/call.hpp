@@ -24,6 +24,33 @@
 
 namespace NUberMock
 {
+    template <class TType>
+    struct TIsClass
+    {
+        typedef char TTwoChars[2];
+
+        template <class T>
+        static char Test(void (T::*)());
+
+        template <class>
+        static TTwoChars& Test(...);
+
+    public:
+        static const bool Value_ = sizeof(Test<TType>(0)) == 1;
+    };
+
+    template <class TType, bool = TIsClass<TType>::Value_>
+    struct TAddRefIfClass
+    {
+        typedef TType& TType_;
+    };
+
+    template <class TType>
+    struct TAddRefIfClass<TType, false>
+    {
+        typedef TType TType_;
+    };
+
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         IsMember && TArgs::Arity_ == 1, TResult>::TType_
@@ -59,7 +86,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !IsMember && TArgs::Arity_ == 0, TResult>::TType_
-        Call(TFunc func, const TArgs&)
+        Call(typename TAddRefIfClass<TFunc>::TType_ func, const TArgs&)
     {
         return func();
     }
@@ -67,7 +94,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !IsMember && TArgs::Arity_ == 1, TResult>::TType_
-        Call(TFunc func, const TArgs& args)
+        Call(typename TAddRefIfClass<TFunc>::TType_ func, const TArgs& args)
     {
         return func(args.Arg_);
     }
@@ -75,7 +102,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !IsMember && TArgs::Arity_ == 2, TResult>::TType_
-        Call(TFunc func, const TArgs& args)
+        Call(typename TAddRefIfClass<TFunc>::TType_ func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_);
     }
@@ -83,7 +110,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !IsMember && TArgs::Arity_ == 3, TResult>::TType_
-        Call(TFunc func, const TArgs& args)
+        Call(typename TAddRefIfClass<TFunc>::TType_ func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_, args.Arg3_);
     }
@@ -91,7 +118,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !IsMember && TArgs::Arity_ == 4, TResult>::TType_
-        Call(TFunc func, const TArgs& args)
+        Call(typename TAddRefIfClass<TFunc>::TType_ func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_, args.Arg3_, args.Arg4_);
     }
@@ -99,7 +126,7 @@ namespace NUberMock
     template <class TResult, bool IsMember, class TFunc, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !IsMember && TArgs::Arity_ == 5, TResult>::TType_
-        Call(TFunc func, const TArgs& args)
+        Call(typename TAddRefIfClass<TFunc>::TType_ func, const TArgs& args)
     {
         return func(args.Arg1_, args.Arg2_, args.Arg3_, args.Arg4_,
             args.Arg5_);

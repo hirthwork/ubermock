@@ -110,8 +110,8 @@ namespace NUberMock
                 return iter->Check_->GetResult(args);
             }
         }
-        return Call<typename IMock<TFunc>::TResult_, IsMember>(TFunc(loader),
-            args);
+        return Call<typename IMock<TFunc>::TResult_, IsMember, TFunc>(
+            TFunc(loader), args);
     }
 
     template <class TFunc>

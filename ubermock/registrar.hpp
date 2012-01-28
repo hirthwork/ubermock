@@ -33,7 +33,9 @@ namespace NUberMock
     template <class TResult, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         NRange::TIsRange<TResultGenerator>::Value_, TResult>::TType_
-        GetResult(TResultGenerator& resultGenerator, const TArgs&)
+        GetResult(
+            typename TAddRefIfClass<TResultGenerator>::TType_ resultGenerator,
+        const TArgs&)
     {
         const TResult& result = resultGenerator.Front();
         resultGenerator.Pop();
@@ -43,9 +45,11 @@ namespace NUberMock
     template <class TResult, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !NRange::TIsRange<TResultGenerator>::Value_, TResult>::TType_
-        GetResult(TResultGenerator& resultGenerator, const TArgs& args)
+        GetResult(
+            typename TAddRefIfClass<TResultGenerator>::TType_ resultGenerator,
+        const TArgs& args)
     {
-        return Call<TResult, false>(resultGenerator, args);
+        return Call<TResult, false, TResultGenerator>(resultGenerator, args);
     }
 
     template <class TFunc, class TCheck, class TResultGenerator>
@@ -66,7 +70,8 @@ namespace NUberMock
 
         virtual TResult_ GetResult(const TArgs_& args)
         {
-            return NUberMock::GetResult<TResult_>(ResultGenerator_, args);
+            return NUberMock::GetResult<TResult_, TResultGenerator>(
+                ResultGenerator_, args);
         }
     };
 
@@ -77,16 +82,16 @@ namespace NUberMock
             const TResultGenerator& resultGenerator, const TArgs& args)
     {
         return !resultGenerator.IsEmpty()
-            && Call<bool, false>(check, args);
+            && Call<bool, false, TCheck>(check, args);
     }
 
     template <class TCheck, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
         !NRange::TIsRange<TResultGenerator>::Value_, bool>::TType_
         CheckResultGenerator(TCheck check,
-            const TResultGenerator& resultGenerator, const TArgs& args)
+            const TResultGenerator&, const TArgs& args)
     {
-        return Call<bool, false>(check, args);
+        return Call<bool, false, TCheck>(check, args);
     }
 
     template <class TFunc, class TCheck, class TResultGenerator,

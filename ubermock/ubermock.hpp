@@ -21,8 +21,8 @@
 #define __UBERMOCK_HPP_2011_11_13__
 
 #include "mockhandler.hpp"
+#include "mocks.hpp"
 #include "symbolloader.hpp"
-#include "traits.hpp"
 
 namespace NUberMock
 {

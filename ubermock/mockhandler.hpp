@@ -23,8 +23,8 @@
 #include <list>
 
 #include "call.hpp"
+#include "mocks.hpp"
 #include "symbolloader.hpp"
-#include "traits.hpp"
 
 namespace NUberMock
 {

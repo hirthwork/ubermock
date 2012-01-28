@@ -26,7 +26,7 @@
 
 #include "call.hpp"
 #include "mockhandler.hpp"
-#include "traits.hpp"
+#include "mocks.hpp"
 
 namespace NUberMock
 {

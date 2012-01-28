@@ -12,10 +12,12 @@ project
     : requirements <target-os>freebsd:<include>/usr/local/include
     ;
 
+compile double-inclusion-call.cpp ;
 compile double-inclusion-mockhandler.cpp ;
+compile double-inclusion-mocks.cpp ;
 compile double-inclusion-registrar.cpp ;
 compile double-inclusion-symbolloader.cpp ;
-compile double-inclusion-traits.cpp ;
+compile double-inclusion-tuple.cpp ;
 compile double-inclusion-ubermock.cpp ;
 
 lib mockapi : mockapi.cpp : <link>shared ;

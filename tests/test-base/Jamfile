@@ -13,6 +13,7 @@ project
     ;
 
 compile double-inclusion-call.cpp ;
+compile double-inclusion-checks.cpp ;
 compile double-inclusion-mockhandler.cpp ;
 compile double-inclusion-mocks.cpp ;
 compile double-inclusion-registrar.cpp ;

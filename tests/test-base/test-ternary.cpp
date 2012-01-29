@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(ternary_global)
     };
 
     NUberMock::TMockRegistrar registrar(Ternary, TCheck::Check,
-        NRange::SingleValue(6));
+        NRange::SingleValue(6) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(Ternary(2, 2, 0), 3);
     BOOST_REQUIRE_EQUAL(Ternary(2, 3, 0), 6);
 }
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(ternary_global_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(Ternary, TCheck::Check,
-        NRange::SingleValue(8));
+        NRange::SingleValue(8) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(Ternary(2, 3, 1), 3);
     BOOST_REQUIRE_EQUAL(Ternary(3, 1, 1), 8);
 }
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(ternary_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::Ternary, TCheck::Check,
-        NRange::SingleValue(16));
+        NRange::SingleValue(16) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().Ternary(2, 0, 1), 13);
     BOOST_REQUIRE_EQUAL(TMockApi().Ternary(3, 3, -1), 16);
 }
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(ternary_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Ternary,
-        TCheck::Check, NRange::SingleValue(17));
+        TCheck::Check, NRange::SingleValue(17) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().Ternary(3, 3, 3), 13);
     BOOST_REQUIRE_EQUAL(TMockApi().Ternary(2, 2, 1), 17);
 }
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(ternary_const_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::TernaryConst, TCheck::Check,
-        NRange::SingleValue(26));
+        NRange::SingleValue(26) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().TernaryConst(3, 0, 3), 23);
     BOOST_REQUIRE_EQUAL(TMockApi().TernaryConst(-1, -1, 7), 26);
 }
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(ternary_const_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::TernaryConst,
-        TCheck::Check, NRange::SingleValue(27));
+        TCheck::Check, NRange::SingleValue(27) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().TernaryConst(6, -1, 1), 23);
     BOOST_REQUIRE_EQUAL(TMockApi().TernaryConst(6, -1, 0), 27);
 }

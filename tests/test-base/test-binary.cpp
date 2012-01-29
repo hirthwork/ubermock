@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(binary_global)
     };
 
     NUberMock::TMockRegistrar registrar(Binary, TCheck::Check,
-        NRange::SingleValue(6));
+        NRange::SingleValue(6) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(Binary(2, 2), 2);
     BOOST_REQUIRE_EQUAL(Binary(2, 3), 6);
 }
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(binary_global_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(Binary, TCheck::Check,
-        NRange::SingleValue(8));
+        NRange::SingleValue(8) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(Binary(2, 4), 2);
     BOOST_REQUIRE_EQUAL(Binary(3, 2), 8);
 }
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(binary_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::Binary, TCheck::Check,
-        NRange::SingleValue(16));
+        NRange::SingleValue(16) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().Binary(3, 0), 12);
     BOOST_REQUIRE_EQUAL(TMockApi().Binary(1, 4), 16);
 }
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(binary_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::Binary, TCheck::Check,
-        NRange::SingleValue(17));
+        NRange::SingleValue(17) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().Binary(3, 3), 12);
     BOOST_REQUIRE_EQUAL(TMockApi().Binary(5, 0), 17);
 }
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(binary_const_member)
     };
 
     NUberMock::TMockRegistrar registrar(&TMockApi::BinaryConst, TCheck::Check,
-        NRange::SingleValue(26));
+        NRange::SingleValue(26) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().BinaryConst(6, 0), 22);
     BOOST_REQUIRE_EQUAL(TMockApi().BinaryConst(0, 5), 26);
 }
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(binary_const_member_simple)
     };
 
     NUberMock::TSimpleMockRegistrar registrar(&TMockApi::BinaryConst,
-        TCheck::Check, NRange::SingleValue(27));
+        TCheck::Check, NRange::SingleValue(27) * NRange::TInfiniteCounter());
     BOOST_REQUIRE_EQUAL(TMockApi().BinaryConst(7, -1), 22);
     BOOST_REQUIRE_EQUAL(TMockApi().BinaryConst(6, -1), 27);
 }

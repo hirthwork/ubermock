@@ -19,6 +19,7 @@ package.install ubermock-install
     : <install-header-subdir>ubermock
     :
     : ubermock
-    : mockhandler.hpp registrar.hpp symbolloader.hpp traits.hpp ubermock.hpp
+    : call.hpp checks.hpp mockhandler.hpp mocks.hpp registrar.hpp
+      symbolloader.hpp tuple.hpp ubermock.hpp
     ;
 

@@ -143,13 +143,23 @@ bool Check2(time_t* t)
     return t == (time_t*)2;
 }
 
-@ Now we can register two values associated with these checks, which will be
-returned instead of values those can be returned by [[time]]:
+@ Now we can provide two functions those will be called if one of the checks
+above returns [[true]]:
+<<mock declaration>>=
+time_t TimeRoundUp(time_t*)
+{
+    return ((time(NULL) + 3599)/3600) * 3600;
+}
+
+time_t TimeRoundDown(time_t*)
+{
+    return (time(NULL)/3600) * 3600;
+}
+
+@ Let's register these functions and associate them with these checks:
 <<mock usage>>=
-NUberMock::TSimpleMockRegistrar registrar1(time, Check1, (
-    time(NULL)/3600) * 3600);
-NUberMock::TSimpleMockRegistrar registrar2(time, Check2,
-    ((time(NULL) + 3599)/3600) * 3600);
+NUberMock::TSimpleMockRegistrar registrar1(time, Check1, TimeRoundDown);
+NUberMock::TSimpleMockRegistrar registrar2(time, Check2, TimeRoundUp);
 
 @ So, we have registered time rounded down to hour for [[0x1]] pointer and time
 rounded up to hour for [[0x2]] pointer. Now we can print the results:

@@ -22,7 +22,7 @@ compile double-inclusion-ubermock.cpp ;
 
 lib mockapi : mockapi.cpp : <link>shared ;
 
-lib mocks : mocks.cpp : <link>static ;
+lib mocks : mocks.cpp /ubermock//ubermock : <link>static ;
 
 unit-test test-nullary
     : test-nullary.cpp mockapi mocks /ubermock//ubermock ;

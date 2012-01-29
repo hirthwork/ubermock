@@ -35,13 +35,18 @@ BOOST_AUTO_TEST_CASE(nullary_original_values)
     BOOST_REQUIRE_EQUAL(TGlobalState::Get(), 5);
 }
 
+void NullaryVoidMock()
+{
+    TGlobalState::Get() = 4;
+}
+
 BOOST_AUTO_TEST_CASE(nullary_global)
 {
     struct TCheck
     {
         static bool Check(const NBacktrace::TBacktrace&)
         {
-            return TGlobalState::Get() == 5;
+            return TGlobalState::Get() == 3;
         }
     };
 
@@ -50,18 +55,30 @@ BOOST_AUTO_TEST_CASE(nullary_global)
         NUberMock::TMockRegistrar registrar(Nullary, TCheck::Check,
             NRange::SingleValue(6) * NRange::TInfiniteCounter());
         BOOST_REQUIRE_EQUAL(Nullary(), 0);
-        TGlobalState::Get() = 5;
+        TGlobalState::Get() = 3;
         BOOST_REQUIRE_EQUAL(Nullary(), 6);
     }
-    BOOST_REQUIRE_EQUAL(Nullary(), 0);
-    NUberMock::TMockRegistrar registrar(Nullary, TCheck::Check,
-        NRange::SingleValue(7) * NRange::TInfiniteCounter());
-    TGlobalState::Get() = 4;
-    BOOST_REQUIRE_EQUAL(Nullary(), 0);
-    TGlobalState::Get() = 5;
-    BOOST_REQUIRE_EQUAL(Nullary(), 7);
-    registrar.Release();
-    BOOST_REQUIRE_EQUAL(Nullary(), 0);
+    {
+        BOOST_REQUIRE_EQUAL(Nullary(), 0);
+        NUberMock::TMockRegistrar registrar(Nullary, TCheck::Check,
+            NRange::SingleValue(7) * NRange::TInfiniteCounter());
+        TGlobalState::Get() = 4;
+        BOOST_REQUIRE_EQUAL(Nullary(), 0);
+        TGlobalState::Get() = 3;
+        BOOST_REQUIRE_EQUAL(Nullary(), 7);
+        registrar.Release();
+        BOOST_REQUIRE_EQUAL(Nullary(), 0);
+    }
+    {
+        TGlobalState::Get() = 0;
+        NUberMock::TMockRegistrar registrar(NullaryVoid, TCheck::Check,
+            NullaryVoidMock);
+        NullaryVoid();
+        BOOST_REQUIRE_EQUAL(TGlobalState::Get(), 5);
+        TGlobalState::Get() = 3;
+        NullaryVoid();
+        BOOST_REQUIRE_EQUAL(TGlobalState::Get(), 4);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(nullary_global_simple)
@@ -82,15 +99,27 @@ BOOST_AUTO_TEST_CASE(nullary_global_simple)
         TGlobalState::Get() = 6;
         BOOST_REQUIRE_EQUAL(Nullary(), 8);
     }
-    BOOST_REQUIRE_EQUAL(Nullary(), 0);
-    NUberMock::TSimpleMockRegistrar registrar(Nullary, TCheck::Check,
-        NRange::SingleValue(9) * NRange::TInfiniteCounter());
-    TGlobalState::Get() = 5;
-    BOOST_REQUIRE_EQUAL(Nullary(), 0);
-    TGlobalState::Get() = 6;
-    BOOST_REQUIRE_EQUAL(Nullary(), 9);
-    registrar.Release();
-    BOOST_REQUIRE_EQUAL(Nullary(), 0);
+    {
+        BOOST_REQUIRE_EQUAL(Nullary(), 0);
+        NUberMock::TSimpleMockRegistrar registrar(Nullary, TCheck::Check,
+            NRange::SingleValue(9) * NRange::TInfiniteCounter());
+        TGlobalState::Get() = 5;
+        BOOST_REQUIRE_EQUAL(Nullary(), 0);
+        TGlobalState::Get() = 6;
+        BOOST_REQUIRE_EQUAL(Nullary(), 9);
+        registrar.Release();
+        BOOST_REQUIRE_EQUAL(Nullary(), 0);
+    }
+    {
+        TGlobalState::Get() = 0;
+        NUberMock::TSimpleMockRegistrar registrar(NullaryVoid, TCheck::Check,
+            NullaryVoidMock);
+        NullaryVoid();
+        BOOST_REQUIRE_EQUAL(TGlobalState::Get(), 5);
+        TGlobalState::Get() = 6;
+        NullaryVoid();
+        BOOST_REQUIRE_EQUAL(TGlobalState::Get(), 4);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(nullary_member)
@@ -103,10 +132,12 @@ BOOST_AUTO_TEST_CASE(nullary_member)
         }
     };
 
-    NUberMock::TMockRegistrar registrar(&TMockApi::Nullary, TCheck::Check,
-        NRange::SingleValue(16) * NRange::TInfiniteCounter());
-    BOOST_REQUIRE_EQUAL(TMockApi().Nullary(), 10);
-    BOOST_REQUIRE_EQUAL(TMockApi(7).Nullary(), 16);
+    {
+        NUberMock::TMockRegistrar registrar(&TMockApi::Nullary, TCheck::Check,
+            NRange::SingleValue(16) * NRange::TInfiniteCounter());
+        BOOST_REQUIRE_EQUAL(TMockApi().Nullary(), 10);
+        BOOST_REQUIRE_EQUAL(TMockApi(7).Nullary(), 16);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(nullary_member_simple)

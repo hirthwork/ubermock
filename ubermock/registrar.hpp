@@ -20,11 +20,10 @@
 #ifndef __REGISTRAR_HPP_2011_11_13__
 #define __REGISTRAR_HPP_2011_11_13__
 
-#include <range/isrange.hpp>
-
 #include <reinvented-wheels/enableif.hpp>
 
 #include "call.hpp"
+#include "isrange.hpp"
 #include "mockhandler.hpp"
 #include "mocks.hpp"
 
@@ -32,7 +31,7 @@ namespace NUberMock
 {
     template <class TResult, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
-        NRange::TIsRange<TResultGenerator>::Value_, TResult>::TType_
+        TIsRange<TResultGenerator>::Value_, TResult>::TType_
         GetResult(
             typename TAddRefIfClass<TResultGenerator>::TType_ resultGenerator,
         const TArgs&)
@@ -44,7 +43,7 @@ namespace NUberMock
 
     template <class TResult, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
-        !NRange::TIsRange<TResultGenerator>::Value_, TResult>::TType_
+        !TIsRange<TResultGenerator>::Value_, TResult>::TType_
         GetResult(
             typename TAddRefIfClass<TResultGenerator>::TType_ resultGenerator,
         const TArgs& args)
@@ -77,7 +76,7 @@ namespace NUberMock
 
     template <class TCheck, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
-        NRange::TIsRange<TResultGenerator>::Value_, bool>::TType_
+        TIsRange<TResultGenerator>::Value_, bool>::TType_
         CheckResultGenerator(typename TAddRefIfClass<TCheck>::TType_ check,
             const TResultGenerator& resultGenerator, const TArgs& args)
     {
@@ -87,7 +86,7 @@ namespace NUberMock
 
     template <class TCheck, class TResultGenerator, class TArgs>
     static inline typename NReinventedWheels::TEnableIf<
-        !NRange::TIsRange<TResultGenerator>::Value_, bool>::TType_
+        !TIsRange<TResultGenerator>::Value_, bool>::TType_
         CheckResultGenerator(typename TAddRefIfClass<TCheck>::TType_ check,
             const TResultGenerator&, const TArgs& args)
     {

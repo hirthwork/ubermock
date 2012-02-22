@@ -20,6 +20,8 @@
 #ifndef __ISRANGE_HPP_2012_02_08__
 #define __ISRANGE_HPP_2012_02_08__
 
+#include <reinvented-wheels/enableif.hpp>
+
 namespace NUberMock
 {
     template <class TRange>
@@ -29,7 +31,8 @@ namespace NUberMock
 
         template <class T>
         static char Test(bool (T::*)() = &T::IsEmpty, void (T::*)() = &T::Pop,
-            int [sizeof(((T*)0)->Front()) ? 1 : -1] = 0);
+            typename NReinventedWheels::TEnableIf<sizeof(((T*)0)->Front())>::
+                TType_* = 0);
 
         template <class>
         static TTwoChars& Test(...);
